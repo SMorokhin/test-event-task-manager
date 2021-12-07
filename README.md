@@ -1,4 +1,4 @@
-# Create empty project and instaall json-server
+# Create empty project and install json-server
 https://github.com/typicode/json-server
 # 1. add app.js:
 ```
