@@ -1,32 +1,82 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
-  </div>
+  <v-app style="background: #E5E5E5">
+    <v-main>
+      <v-container class="container">
+        <div class="header-name">
+          Events
+        </div>
+        <div class="d-flex mb-15">
+          <div>
+            <search></search>
+          </div>
+          <div>
+            <date-picker></date-picker>
+          </div>
+          <div class="btn">
+            <create-modal></create-modal>
+          </div>
+        </div>
+        <div class="d-flex flex-row justify-lg-space-between">
+          <event-list></event-list>
+          <router-view/>
+        </div>
+      </v-container>
+    </v-main>
+  </v-app>
 </template>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+<script>
+
+import EventList from './components/eventList/EventList.vue'
+import DatePicker from './components/UI/datePicker/DatePicker.vue'
+import Search from './components/UI/search/Search.vue'
+import CreateModal from './components/UI/CreateModal/CreateModal'
+
+import { mapGetters, mapActions } from 'vuex'
+
+export default {
+  name: 'App',
+  components: {
+    EventList,
+    DatePicker,
+    Search,
+    CreateModal
+  },
+  async created () {
+    await this.loadEventList()
+  },
+  data: () => ({
+    //
+  }),
+  computed: {
+    ...mapGetters({
+      vEventList: 'event/vEventList'
+    })
+  },
+  methods: {
+    ...mapActions({
+      loadEventList: 'event/loadEventList'
+    })
+  }
+}
+</script>
+
+<style>
+.container {
+  width: 1068px;
+  box-sizing: border-box;
+  padding: 0;
 }
 
-#nav {
-  padding: 30px;
+.header-name {
+  width: 1068px;
+  margin-top: 68px;
+  margin-bottom: 41px;
+  font-size: 24px;
+  font-width: 500;
+}
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
+.btn {
+  margin-left: auto;
 }
 </style>

@@ -1,0 +1,214 @@
+<template>
+  <v-dialog
+    v-model="dialog"
+    persistent
+    max-width="700px"
+  >
+    <template v-slot:activator="{ on, attrs }">
+      <v-btn
+        color="primary"
+        dark
+        v-bind="attrs"
+        v-on="on"
+      >
+        Create
+      </v-btn>
+    </template>
+    <v-card>
+      <v-card-title>
+        <span class="text-h5">Create Event</span>
+      </v-card-title>
+      <v-card-text>
+        <div class="d-flex justify-lg-space-between">
+          <div class="d-flex">
+            <div class="d-flex flex-column">
+              Title
+              <v-text-field
+                label="Title"
+                solo
+                required
+                v-model="title"
+              ></v-text-field>
+            </div>
+          </div>
+          <div class="d-flex">
+            <div class="flex-column">
+              Date
+              <v-datetime-picker
+                label="Select date and time"
+                :text-field-props="textFieldProps"
+                v-model="dateTime"
+              >
+                <template slot="dateIcon">
+                  <v-icon>mdi-calendar</v-icon>
+                </template>
+                <template slot="timeIcon">
+                  <v-icon>mdi-clock</v-icon>
+                </template>
+              </v-datetime-picker>
+              <v-checkbox
+                v-model="repeat"
+                label="Repeat"
+              ></v-checkbox>
+            </div>
+          </div>
+        </div>
+        <div class="d-flex justify-lg-space-between">
+          <div class="flex-column">
+            Category
+            <v-select
+              solo
+              v-model="selectedEventCategory"
+              :items="eventCategory.map(e => e.name)"
+            ></v-select>
+          </div>
+          <div class="flex-column">
+            Participants
+            <v-select
+              prepend-inner-icon="mdi-magnify"
+              solo
+              chips
+              multiple
+              attach
+              deletable-chips
+              v-model="selectedParticipant"
+              :items="participants.map(e => e.fls)"
+            ></v-select>
+          </div>
+        </div>
+        <div class="d-flex flex-column">
+          Description
+          <v-textarea
+            solo
+            v-model="description"
+            name="input-7-4"
+            label="Description"
+          ></v-textarea>
+        </div>
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn
+          color="error"
+          text
+          @click="dialog = false"
+        >
+          Close
+        </v-btn>
+        <v-btn
+          color="blue darken-1"
+          text
+          @click="dialog = false; saveEvent()"
+          :disabled="!formValid"
+        >
+          Save
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+</template>
+
+<script>
+import axios from '../../../axios'
+
+export default {
+  name: 'CreateModal',
+  components: {},
+  data () {
+    return {
+      dialog: false,
+      repeat: false,
+      title: '',
+      description: '',
+      selectedParticipant: [],
+      selectedEventCategory: '',
+      dateTime: null,
+      textFieldProps: {
+        prependInnerIcon: 'mdi-calendar',
+        solo: true
+      },
+      eventCategory: [],
+      participants: []
+    }
+  },
+  async created () {
+    await this.getEventCategory()
+    await this.getParticipants()
+  },
+  methods: {
+    async getEventCategory () {
+      try {
+        const response = await axios.get('/eventCategory')
+        this.eventCategory = response.data
+      } catch (e) {
+        console.log(e)
+      }
+    },
+    async getParticipants () {
+      try {
+        const response = await axios.get('/employee')
+        this.participants = response.data
+      } catch (e) {
+        console.log(e)
+      }
+    },
+    async saveEvent () {
+      try {
+        await axios.post('/event', {
+          name: this.title,
+          description: this.description,
+          begDate: this.dateTimeToIsoString,
+          endDate: this.dateTimeToIsoString,
+          participant: this.participantsList,
+          eventTypeId: this.getEventTypeId,
+          repeat: this.repeat
+        })
+        // плохой костыль. Нужно создать экшн и мутацию в vuex, а в eventList получать список по геттеру
+        location.reload()
+      } catch (e) {
+        console.log(e)
+      }
+    }
+  },
+  computed: {
+    participantsList () {
+      const len = this.selectedParticipant.length - 1
+      return this.selectedParticipant.reduce((acc, el, idx) =>
+        idx === len ? acc + el : acc + el + ', ', '')
+    },
+    getEventTypeId () {
+      if (this.selectedEventCategory) {
+        const result = this.eventCategory.find(el => {
+          return el.name === this.selectedEventCategory
+            ? el.id
+            : null
+        })
+        return result.id
+      } return null
+    },
+    dateTimeToIsoString () {
+      let result = ''
+      if (this.dateTime !== null) {
+        result +=
+          this.dateTime.toISOString().slice(0, 10) +
+          ' ' +
+          this.dateTime.toISOString().slice(11, 16)
+        return result
+      }
+      return null
+    },
+    formValid () {
+      return this.dateTime &&
+        this.description &&
+        this.selectedEventCategory &&
+        this.title
+    }
+  }
+}
+</script>
+
+<style scoped>
+.v-input {
+  width: 301px;
+}
+</style>
