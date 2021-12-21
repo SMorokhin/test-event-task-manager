@@ -26,6 +26,7 @@
         </template>
         <v-date-picker
           v-model="dates"
+          @input="$emit('input', dates)"
           multiple
           range
           no-title

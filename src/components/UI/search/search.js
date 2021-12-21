@@ -1,5 +1,8 @@
 export default {
   name: 'Search',
+  model: {
+    value: ''
+  },
   props: {
     width: {
       type: String,
@@ -8,6 +11,7 @@ export default {
   },
   data () {
     return {
+      modelValue: ''
     }
   }
 }

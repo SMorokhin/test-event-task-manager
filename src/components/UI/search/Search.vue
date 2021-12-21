@@ -1,6 +1,8 @@
 <template>
   <div class="select">
     <v-text-field
+      @input="$emit('input', modelValue)"
+      v-model="modelValue"
       label="Search"
       solo
       :style="{ width: this.width}"

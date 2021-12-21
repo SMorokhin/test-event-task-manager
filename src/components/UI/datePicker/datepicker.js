@@ -8,7 +8,7 @@ export default {
   },
   data () {
     return {
-      dates: ['2021-12-01', '2021-12-02'],
+      dates: [],
       menu: false
     }
   }

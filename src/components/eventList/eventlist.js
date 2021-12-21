@@ -10,6 +10,16 @@ export default {
       date: null
     }
   },
+  props: {
+    searchText: {
+      type: String,
+      default: ''
+    },
+    searchDates: {
+      type: Array,
+      default: []
+    }
+  },
   async created () {
     await this.getEventsList()
     await this.getEventType()
@@ -33,7 +43,6 @@ export default {
           obj.color = this.eventType.find(el => {
             return el.id === obj.eventTypeId
           }).color
-          return obj
         })
       }
     }
@@ -42,6 +51,26 @@ export default {
     ...mapGetters({
       vEventList: 'event/vEventList'
     }),
+    /**
+     * Filter event list by searchText parameter
+     * @returns {*[]}
+     */
+    filteredEventList () {
+      return this.eventInfo.filter(el => {
+        return el.name.toLowerCase().includes(this.searchText.toLowerCase()) ? el : null
+      })
+    },
+    /**
+     * Filter dates by searchDates parameter
+     * @returns {*[]}
+     */
+    filteredDates () {
+      if (this.searchDates.length !== 2) return this.eventListDates
+      this.searchDates.sort()
+      return this.eventListDates.filter(date => {
+        return (this.searchDates[0] <= date && this.searchDates[1] >= date)
+      })
+    },
     /**
      * Get unique dates of each event
      * @returns {*[]}
@@ -60,10 +89,13 @@ export default {
      */
     groupEventList () {
       const result = {}
-      this.eventListDates.forEach(date => {
-        result[date] = this.eventInfo.filter(el => {
+      this.filteredDates.forEach(date => {
+        const tmp = this.filteredEventList.filter(el => {
           return el.endDate.slice(0, 10) === date
         })
+        if (tmp.length) {
+          result[date] = tmp
+        }
       })
       return result
     }

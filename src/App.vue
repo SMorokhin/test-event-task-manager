@@ -7,17 +7,20 @@
         </div>
         <div class="d-flex mb-15">
           <div>
-            <search></search>
+            <search v-model="searchText"></search>
           </div>
           <div>
-            <date-picker></date-picker>
+            <date-picker v-model="searchDates"></date-picker>
           </div>
           <div class="btn">
             <create-modal></create-modal>
           </div>
         </div>
         <div class="d-flex flex-row justify-lg-space-between">
-          <event-list></event-list>
+          <event-list
+            :search-text="searchText"
+            :search-dates="searchDates"
+          ></event-list>
           <router-view/>
         </div>
       </v-container>
@@ -46,7 +49,8 @@ export default {
     await this.loadEventList()
   },
   data: () => ({
-    //
+    searchText: '',
+    searchDates: []
   }),
   computed: {
     ...mapGetters({
