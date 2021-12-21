@@ -4,15 +4,13 @@ export default {
   name: 'EventDescription',
   data () {
     return {
-      eventInfo: [],
-      eventColor: null
+      eventInfo: {}
     }
   },
   watch: {
     '$route.params.id': {
       async handler () {
         await this.getEventDescription(this.$route.params.id)
-        await this.getEventColor(this.eventInfo.eventTypeId)
       },
       immediate: true,
       deep: true
@@ -20,10 +18,8 @@ export default {
   },
   methods: {
     async getEventDescription (id) {
-      this.eventInfo = await eventAPI.getEventDescription(id)
-    },
-    async getEventColor (eventId) {
-      this.eventColor = await eventAPI.getEventColor(eventId)
+      const result = await eventAPI.getEventDescription(id)
+      this.eventInfo = result.pop()
     }
   }
 }

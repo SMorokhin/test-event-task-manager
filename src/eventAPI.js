@@ -7,38 +7,41 @@ import axios from './axios'
  */
 export async function getEventDescription (id) {
   try {
-    const response = await axios.get('/event', {
+    let response = await axios.get('/event', {
       params: {
         id
       }
     })
-    return response.data.length ? response.data[0] : []
+    response = addEventCategoryToEvent(response.data)
+    return response
   } catch (e) {
     console.log(e)
   }
 }
 
 /**
- * Get color of event by event ID
- * @param eventId
+ * Returns merged data of event list with event category
  * @returns {Promise<*>}
  */
-export async function getEventColor (eventId) {
+export async function addEventCategoryToEvent (eventList) {
   try {
-    const response = await axios.get('/eventCategory', {
-      params: {
-        id: eventId
-      }
+    const response = await axios.get('/eventCategory')
+    const eventType = response.data
+    eventList.forEach(obj => {
+      obj.category = eventType.find(el => {
+        return el.id === obj.eventTypeId
+      })
+      delete obj.eventTypeId
     })
-    return response.data.color
+    return eventList
   } catch (e) {
     console.log(e)
   }
 }
 
 /**
- * Return event's category list
- * @returns {Promise<*>}
+ * Get event type list
+ * @returns {Promise<any>}
  */
 export async function getEventType () {
   try {
@@ -55,8 +58,9 @@ export async function getEventType () {
  */
 export async function getEventsList () {
   try {
-    const response = await axios.get('/event')
-    return response.data
+    let response = await axios.get('/event')
+    response = addEventCategoryToEvent(response.data)
+    return response
   } catch (e) {
     console.log(e)
   }

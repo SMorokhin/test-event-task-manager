@@ -14,7 +14,6 @@
         <router-link class="routerLink"
           :to="{
           name: 'EventDescription',
-          path: '/:id',
           params: { id: data.id }
         }">
           <div> {{ data.begDate }} - {{ data.endDate }}</div>

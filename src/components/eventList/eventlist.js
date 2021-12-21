@@ -6,7 +6,6 @@ export default {
   data () {
     return {
       eventInfo: [],
-      eventType: [],
       date: null
     }
   },
@@ -22,29 +21,11 @@ export default {
   },
   async created () {
     await this.getEventsList()
-    await this.getEventType()
-    this.makeEventList()
     this.date = new Date()
   },
   methods: {
     async getEventsList () {
       this.eventInfo = await eventAPI.getEventsList()
-    },
-    async getEventType () {
-      this.eventType = await eventAPI.getEventType()
-    },
-    /**
-     * Make formatted event list
-     * @returns {*[]}
-     */
-    makeEventList () {
-      if (this.eventInfo.length && this.eventType.length) {
-        this.eventInfo.forEach(obj => {
-          obj.color = this.eventType.find(el => {
-            return el.id === obj.eventTypeId
-          }).color
-        })
-      }
     }
   },
   computed: {
