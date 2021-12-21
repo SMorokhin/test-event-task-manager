@@ -179,7 +179,7 @@ export default {
       } return null
     },
     /**
-     * Converting date to "yyyy-mm-dd hh:mm" format
+     * Parsing date to "yyyy-mm-dd hh:mm" format
      * @returns {string|null}
      */
     dateTimeToIsoString () {
