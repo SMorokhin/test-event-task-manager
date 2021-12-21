@@ -9,11 +9,17 @@
         v-for="data in el"
         :key="data.id"
         class="event-description"
-        @click="targetEvent(data.id)"
-        :class="{ active: target === data.id}"
+        :class="{ active: $route.params.id === data.id }"
       >
-        <div> {{ data.begDate }} - {{ data.endDate }} </div>
-        <div class="event-name"> {{ data.name }} </div>
+        <router-link class="routerLink"
+          :to="{
+          name: 'EventDescription',
+          path: '/:id',
+          params: { id: data.id }
+        }">
+          <div> {{ data.begDate }} - {{ data.endDate }}</div>
+          <div class="event-name"> {{ data.name }}</div>
+        </router-link>
       </div>
     </div>
   </div>

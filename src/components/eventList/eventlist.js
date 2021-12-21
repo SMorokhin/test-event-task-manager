@@ -1,4 +1,4 @@
-import axios from '../../axios'
+import * as eventAPI from '../../eventAPI'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -7,8 +7,7 @@ export default {
     return {
       eventInfo: [],
       eventType: [],
-      date: null,
-      target: null
+      date: null
     }
   },
   async created () {
@@ -18,41 +17,24 @@ export default {
   },
   methods: {
     async getEventsList () {
-      try {
-        const response = await axios.get('/event')
-        this.eventInfo = response.data
-      } catch (e) {
-        console.log(e)
-      }
+      this.eventInfo = await eventAPI.getEventsList()
     },
     async getEventType () {
-      try {
-        const response = await axios.get('/eventCategory')
-        this.eventType = response.data
-      } catch (e) {
-        console.log(e)
-      }
-    },
-    targetEvent (id) {
-      if (this.target !== id) {
-        this.target = id
-        this.$router.push(`/${id}`)
-      }
-    },
-    setTarget () {
-      this.target = this.groupEventList[0][1][0].id
-      return this.target
+      this.eventType = await eventAPI.getEventType()
     }
   },
   computed: {
     ...mapGetters({
       vEventList: 'event/vEventList'
     }),
+    /**
+     * Make formatted event list
+     * @returns {*[]}
+     */
     makeEventList () {
       const result = []
       if (this.eventInfo.length && this.eventType.length) {
-        const eventInfo = this.eventInfo
-        eventInfo.forEach(obj => {
+        this.eventInfo.forEach(obj => {
           this.eventType.forEach(el => {
             if (obj.eventTypeId === el.id) {
               obj.color = el.color
@@ -63,28 +45,28 @@ export default {
       }
       return result
     },
+    /**
+     * Get unique dates of each event
+     * @returns {*[]}
+     */
     eventListDates () {
-      const eventList = this.makeEventList
-      const result = []
-      eventList.forEach(obj => {
-        const str = obj.endDate.slice(0, 10)
-        if (result.indexOf(str) === -1) {
-          result.push(str)
-        }
+      const dateList = this.makeEventList.map((el, idx) => {
+        return el.endDate.slice(0, 10)
       })
-      result.sort().reverse()
-      return result
+      return dateList.filter((el, idx) => {
+        return dateList.indexOf(el) === idx
+      }).sort().reverse()
     },
+    /**
+     * Group list of events by date
+     * @returns {{}}
+     */
     groupEventList () {
       const result = {}
-      this.eventListDates.forEach(obj => {
-        const tmp = []
-        this.makeEventList.forEach(el => {
-          if (obj === el.endDate.slice(0, 10)) {
-            tmp.push(el)
-          }
+      this.eventListDates.forEach(date => {
+        result[date] = this.makeEventList.filter(el => {
+          return el.endDate.slice(0, 10) === date
         })
-        result[obj] = tmp
       })
       return result
     }

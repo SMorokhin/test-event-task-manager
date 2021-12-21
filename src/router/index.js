@@ -9,12 +9,6 @@ const routes = [
     path: '/:id',
     name: 'EventDescription',
     component: EventDescription
-    // children: [
-    //   {
-    //     path: 'id',
-    //     component: EventDescription
-    //   }
-    // ]
   }
 ]
 

@@ -1,4 +1,4 @@
-import axios from '../../axios'
+import * as eventAPI from '../../eventAPI'
 
 export default {
   name: 'EventDescription',
@@ -20,28 +20,10 @@ export default {
   },
   methods: {
     async getEventDescription (id) {
-      try {
-        const response = await axios.get('/event', {
-          params: {
-            id
-          }
-        })
-        this.eventInfo = response.data.length ? response.data[0] : []
-      } catch (e) {
-        console.log(e)
-      }
+      this.eventInfo = await eventAPI.getEventDescription(id)
     },
     async getEventColor (eventId) {
-      try {
-        const response = await axios.get('/eventCategory', {
-          params: {
-            id: eventId
-          }
-        })
-        this.eventColor = response.data.color
-      } catch (e) {
-        console.log(e)
-      }
+      this.eventColor = await eventAPI.getEventColor(eventId)
     }
   }
 }

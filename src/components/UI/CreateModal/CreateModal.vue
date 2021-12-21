@@ -109,7 +109,7 @@
 </template>
 
 <script>
-import axios from '../../../axios'
+import * as eventAPI from '../../../eventAPI'
 
 export default {
   name: 'CreateModal',
@@ -132,50 +132,42 @@ export default {
     }
   },
   async created () {
-    await this.getEventCategory()
+    await this.getEventType()
     await this.getParticipants()
   },
   methods: {
-    async getEventCategory () {
-      try {
-        const response = await axios.get('/eventCategory')
-        this.eventCategory = response.data
-      } catch (e) {
-        console.log(e)
-      }
+    async getEventType () {
+      this.eventCategory = await eventAPI.getEventType()
     },
     async getParticipants () {
-      try {
-        const response = await axios.get('/employee')
-        this.participants = response.data
-      } catch (e) {
-        console.log(e)
-      }
+      this.participants = await eventAPI.getParticipants()
     },
     async saveEvent () {
-      try {
-        await axios.post('/event', {
-          name: this.title,
-          description: this.description,
-          begDate: this.dateTimeToIsoString,
-          endDate: this.dateTimeToIsoString,
-          participant: this.participantsList,
-          eventTypeId: this.getEventTypeId,
-          repeat: this.repeat
-        })
-        // плохой костыль. Нужно создать экшн и мутацию в vuex, а в eventList получать список по геттеру
-        location.reload()
-      } catch (e) {
-        console.log(e)
-      }
+      await eventAPI.saveEvent({
+        title: this.title,
+        description: this.description,
+        begDate: this.dateTimeToIsoString,
+        endDate: this.dateTimeToIsoString,
+        participant: this.participantsList,
+        eventTypeId: this.getEventTypeId,
+        repeat: this.repeat
+      })
     }
   },
   computed: {
+    /**
+     * Returns string of participants which was selected by one line, devided by ','
+     * @returns {*}
+     */
     participantsList () {
       const len = this.selectedParticipant.length - 1
       return this.selectedParticipant.reduce((acc, el, idx) =>
         idx === len ? acc + el : acc + el + ', ', '')
     },
+    /**
+     * Returns event's ID by event name
+     * @returns {null|*}
+     */
     getEventTypeId () {
       if (this.selectedEventCategory) {
         const result = this.eventCategory.find(el => {
@@ -186,6 +178,10 @@ export default {
         return result.id
       } return null
     },
+    /**
+     * Converting date to "yyyy-mm-dd hh:mm" format
+     * @returns {string|null}
+     */
     dateTimeToIsoString () {
       let result = ''
       if (this.dateTime !== null) {
@@ -197,6 +193,10 @@ export default {
       }
       return null
     },
+    /**
+     * Validates input blocks
+     * @returns {null|string}
+     */
     formValid () {
       return this.dateTime &&
         this.description &&
