@@ -39,6 +39,7 @@
 
 .active {
   background: rgba(59, 130, 246, .1);
+  border-radius: 8px 2px 2px 8px;
   &__success {
     border-right: 3px solid #3B82F6;
   }
@@ -48,6 +49,11 @@
   &__error {
     border-right: 3px solid #EC4899;
   }
+}
+
+.v-application .rounded-circle {
+  font-size: 5px;
+  vertical-align: middle;
 }
 
 #list-container::-webkit-scrollbar {

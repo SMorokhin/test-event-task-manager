@@ -136,6 +136,14 @@ export default {
     await this.getParticipants()
   },
   methods: {
+    clearFields () {
+      this.title = ''
+      this.dateTime = null
+      this.description = ''
+      this.selectedEventCategory = ''
+      this.selectedParticipant = []
+      this.repeat = false
+    },
     async getEventType () {
       this.eventCategory = await eventAPI.getEventType()
     },
@@ -152,6 +160,7 @@ export default {
         eventTypeId: this.getEventTypeId,
         repeat: this.repeat
       })
+      this.clearFields()
       this.$emit('getEventsList')
     }
   },

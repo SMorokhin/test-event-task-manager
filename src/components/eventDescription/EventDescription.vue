@@ -1,6 +1,6 @@
 <template>
   <div class="description-container">
-    <div v-if="loaded">
+    <div v-if="loaded && eventInfo">
       <v-row justify="space-between">
         <v-col cols="auto">
           <div class="head">
@@ -35,6 +35,9 @@
           {{ this.eventInfo.description }}
         </v-col>
       </v-row>
+    </div>
+    <div v-else>
+      Event by searched ID is not found.
     </div>
   </div>
 </template>

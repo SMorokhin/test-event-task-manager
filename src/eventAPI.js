@@ -16,6 +16,7 @@ export async function getEventDescription (id) {
     response = addEventCategoryToEvent(response.data)
     return response
   } catch (e) {
+    console.log('ERROR!')
     console.log(e)
   }
 }
