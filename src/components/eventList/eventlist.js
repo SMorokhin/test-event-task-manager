@@ -26,6 +26,16 @@ export default {
   methods: {
     async getEventsList () {
       this.eventInfo = await eventAPI.getEventsList()
+    },
+    /**
+     * Get dat of week by dateTime
+     * @param date
+     * @returns {string}
+     */
+    getDayOfWeek (date) {
+      const options = { weekday: 'long' }
+      const day = new Intl.DateTimeFormat('en-US', options).format(new Date(date))
+      return day + ' ' + date
     }
   },
   computed: {
@@ -71,11 +81,12 @@ export default {
     groupEventList () {
       const result = {}
       this.filteredDates.forEach(date => {
+        const fullDate = this.getDayOfWeek(date)
         const tmp = this.filteredEventList.filter(el => {
           return el.endDate.slice(0, 10) === date
         })
         if (tmp.length) {
-          result[date] = tmp
+          result[fullDate] = tmp
         }
       })
       return result

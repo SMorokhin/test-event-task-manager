@@ -100,3 +100,17 @@ export async function saveEvent (obj) {
     console.log(e)
   }
 }
+
+/**
+ * Remove event from list by event id
+ * @param eventId
+ * @returns {Promise<void>}
+ */
+export async function removeEvent (eventId) {
+  try {
+    const response = await axios.delete(`/event/${eventId}`)
+    console.log(response)
+  } catch (e) {
+    console.log(e)
+  }
+}

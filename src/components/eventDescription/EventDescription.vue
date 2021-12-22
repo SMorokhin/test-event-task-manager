@@ -1,18 +1,40 @@
 <template>
   <div class="description-container">
-    <div v-if="eventInfo">
-      <div class="head">
-        {{ this.eventInfo.name }}
-      </div>
-      <div class="d-flex">
-        {{ this.eventInfo.begDate }} - {{ this.eventInfo.endDate }}
-      </div>
-      <div>
-        {{ this.eventInfo.participant }}
-      </div>
-      <div>
-        {{ this.eventInfo.description }}
-      </div>
+    <div v-if="loaded">
+      <v-row justify="space-between">
+        <v-col cols="auto">
+          <div class="head">
+            {{ this.eventInfo.name }}
+          </div>
+          <div class="d-flex">
+            <div>
+              {{ this.getLongDay }}&nbsp;{{ this.eventInfo.begDate.slice(0, 10) }}
+            </div>
+            <div>
+              <div :style="{ background: eventInfo.category.color }"
+                   class="pe-md-5 rounded-circle d-inline-block"
+              >&nbsp;</div>
+              {{ this.getTimeLine }}
+            </div>
+          </div>
+        </v-col>
+        <v-col cols="auto">
+          <vertical-burger-menu
+            @removeEvent="removeEvent"
+            :list-items="listItemsProps">
+          </vertical-burger-menu>
+        </v-col>
+      </v-row>
+      <v-row class="participant-container">
+        <v-col>
+          {{ this.eventInfo.participant }}
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col>
+          {{ this.eventInfo.description }}
+        </v-col>
+      </v-row>
     </div>
   </div>
 </template>
