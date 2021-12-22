@@ -12,7 +12,7 @@
             </div>
             <div class="head__time">
               <div :style="{ background: eventInfo.category.color }"
-                   class="pe-md-5 rounded-circle d-inline-block"
+                   class="pe-md-4 rounded-circle d-inline-block"
               >&nbsp;</div>
               {{ this.getTimeLine }}
             </div>
@@ -31,7 +31,7 @@
         </v-col>
       </v-row>
       <v-row>
-        <v-col>
+        <v-col class="description-content">
           {{ this.eventInfo.description }}
         </v-col>
       </v-row>

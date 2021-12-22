@@ -6,6 +6,26 @@
   padding: 20px 25px;
 }
 
+.description-content {
+  overflow-y: scroll;
+  max-height: 450px
+}
+
+.description-content::-webkit-scrollbar {
+  width: 10px;
+  background-color: #ffffff;
+}
+
+.description-content::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: #203745;
+}
+
+.description-content::-webkit-scrollbar-track {
+  border-radius: 10px;
+  background-color: #ffffff;
+}
+
 .participant-container {
   border-top: 1px solid #ECF0F2;
   border-bottom: 1px solid #ECF0F2;

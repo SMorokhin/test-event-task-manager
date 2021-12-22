@@ -9,7 +9,12 @@
         v-for="data in el"
         :key="data.id"
         class="event-description"
-        :class="{ active: $route.params.id === data.id }"
+        :class="{
+          active: $route.params.id === data.id,
+          active__success: $route.params.id === data.id && data.category.id === 1,
+          active__warning: $route.params.id === data.id && data.category.id === 2,
+          active__error: $route.params.id === data.id && data.category.id === 3
+        }"
       >
         <router-link class="routerLink"
           :to="{

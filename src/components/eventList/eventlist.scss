@@ -39,20 +39,28 @@
 
 .active {
   background: rgba(59, 130, 246, .1);
-  border-right: 3px solid blue;
+  &__success {
+    border-right: 3px solid #3B82F6;
+  }
+  &__warning {
+    border-right: 3px solid #FBBF24;
+  }
+  &__error {
+    border-right: 3px solid #EC4899;
+  }
 }
 
 #list-container::-webkit-scrollbar {
   width: 10px;
-  background-color: #f9f9fd;
+  background-color: #ffffff;
 }
 
 #list-container::-webkit-scrollbar-thumb {
   border-radius: 10px;
-  background-color: #18aaaa;
+  background-color: #203745;
 }
 
 #list-container::-webkit-scrollbar-track {
   border-radius: 10px;
-  background-color: #f9f9fd;
+  background-color: #ffffff;
 }
