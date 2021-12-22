@@ -1,5 +1,4 @@
 import * as eventAPI from '../../eventAPI'
-import { mapGetters } from 'vuex'
 
 export default {
   name: 'EventList',
@@ -21,7 +20,6 @@ export default {
   },
   async created () {
     await this.getEventsList()
-    this.date = new Date()
   },
   methods: {
     async getEventsList () {
@@ -39,9 +37,6 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({
-      vEventList: 'event/vEventList'
-    }),
     /**
      * Filter event list by searchText parameter
      * @returns {*[]}

@@ -13,15 +13,16 @@
             <date-picker v-model="searchDates"></date-picker>
           </div>
           <div class="btn">
-            <create-modal></create-modal>
+            <create-modal @getEventsList="pGetEventsList"></create-modal>
           </div>
         </div>
         <div class="d-flex flex-row justify-lg-space-between">
           <event-list
+            ref="cGetEventsList"
             :search-text="searchText"
             :search-dates="searchDates"
           ></event-list>
-          <router-view/>
+          <router-view @removeEvent="pGetEventsList"/>
         </div>
       </v-container>
     </v-main>
@@ -35,8 +36,6 @@ import DatePicker from './components/UI/datePicker/DatePicker.vue'
 import Search from './components/UI/search/Search.vue'
 import CreateModal from './components/UI/CreateModal/CreateModal'
 
-import { mapGetters, mapActions } from 'vuex'
-
 export default {
   name: 'App',
   components: {
@@ -45,22 +44,16 @@ export default {
     Search,
     CreateModal
   },
-  async created () {
-    await this.loadEventList()
-  },
   data: () => ({
     searchText: '',
     searchDates: []
   }),
   computed: {
-    ...mapGetters({
-      vEventList: 'event/vEventList'
-    })
   },
   methods: {
-    ...mapActions({
-      loadEventList: 'event/loadEventList'
-    })
+    pGetEventsList () {
+      this.$refs.cGetEventsList.getEventsList()
+    }
   }
 }
 </script>

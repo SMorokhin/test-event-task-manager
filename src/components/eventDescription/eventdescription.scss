@@ -11,3 +11,13 @@
   border-bottom: 1px solid #ECF0F2;
   font-weight: 500;
 }
+
+.head {
+  &__day {
+    color: #3B82F6;
+    margin-right: 8px;
+  }
+  &__time {
+    font-size: 12px;
+  }
+}

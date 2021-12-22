@@ -7,10 +7,10 @@
             {{ this.eventInfo.name }}
           </div>
           <div class="d-flex">
-            <div>
+            <div class="head__day">
               {{ this.getLongDay }}&nbsp;{{ this.eventInfo.begDate.slice(0, 10) }}
             </div>
-            <div>
+            <div class="head__time">
               <div :style="{ background: eventInfo.category.color }"
                    class="pe-md-5 rounded-circle d-inline-block"
               >&nbsp;</div>

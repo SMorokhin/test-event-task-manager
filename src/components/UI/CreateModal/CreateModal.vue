@@ -152,6 +152,7 @@ export default {
         eventTypeId: this.getEventTypeId,
         repeat: this.repeat
       })
+      this.$emit('getEventsList')
     }
   },
   computed: {

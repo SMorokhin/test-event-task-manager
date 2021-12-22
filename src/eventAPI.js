@@ -1,4 +1,5 @@
 import axios from './axios'
+// import router from './router'
 
 /**
  * Get event by ID
@@ -14,26 +15,6 @@ export async function getEventDescription (id) {
     })
     response = addEventCategoryToEvent(response.data)
     return response
-  } catch (e) {
-    console.log(e)
-  }
-}
-
-/**
- * Returns merged data of event list with event category
- * @returns {Promise<*>}
- */
-export async function addEventCategoryToEvent (eventList) {
-  try {
-    const response = await axios.get('/eventCategory')
-    const eventType = response.data
-    eventList.forEach(obj => {
-      obj.category = eventType.find(el => {
-        return el.id === obj.eventTypeId
-      })
-      delete obj.eventTypeId
-    })
-    return eventList
   } catch (e) {
     console.log(e)
   }
@@ -95,7 +76,6 @@ export async function saveEvent (obj) {
       eventTypeId: obj.eventTypeId,
       repeat: obj.repeat
     })
-    location.reload()
   } catch (e) {
     console.log(e)
   }
@@ -108,8 +88,29 @@ export async function saveEvent (obj) {
  */
 export async function removeEvent (eventId) {
   try {
-    const response = await axios.delete(`/event/${eventId}`)
-    console.log(response)
+    await axios.delete(`/event/${eventId}`)
+    // await router.push('/')
+    // location.reload()
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+/**
+ * Returns merged data of event list with event category
+ * @returns {Promise<*>}
+ */
+async function addEventCategoryToEvent (eventList) {
+  try {
+    const response = await axios.get('/eventCategory')
+    const eventType = response.data
+    eventList.forEach(obj => {
+      obj.category = eventType.find(el => {
+        return el.id === obj.eventTypeId
+      })
+      delete obj.eventTypeId
+    })
+    return eventList
   } catch (e) {
     console.log(e)
   }
