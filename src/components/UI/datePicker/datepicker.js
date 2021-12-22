@@ -11,5 +11,10 @@ export default {
       dates: [],
       menu: false
     }
+  },
+  methods: {
+    clearDates () {
+      this.dates = []
+    }
   }
 }

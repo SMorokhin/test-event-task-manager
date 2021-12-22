@@ -23,7 +23,7 @@
         }">
           <div>
             <div :style="{ background: data.category.color }"
-                 class="pe-md-2 rounded-circle d-inline-block"
+                 class="pe-2 rounded-circle d-inline-block"
             >&nbsp;</div>
             {{ data.begDate.slice(10) }} - {{ data.endDate.slice(10) }}</div>
           <div class="event-name"> {{ data.name }}</div>

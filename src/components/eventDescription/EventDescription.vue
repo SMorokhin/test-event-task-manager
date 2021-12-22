@@ -26,8 +26,11 @@
         </v-col>
       </v-row>
       <v-row class="participant-container">
-        <v-col>
+        <v-col v-if="eventInfo.participant">
           {{ this.eventInfo.participant }}
+        </v-col>
+        <v-col v-else>
+          No participants for this event
         </v-col>
       </v-row>
       <v-row>
