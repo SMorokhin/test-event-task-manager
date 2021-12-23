@@ -40,6 +40,7 @@ export default {
      */
     async removeEvent () {
       await eventAPI.removeEvent(this.$route.params.id)
+      await this.getEventDescription(this.$route.params.id)
       this.$emit('removeEvent')
     }
   },

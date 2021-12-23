@@ -36,7 +36,7 @@
           <v-btn
             text
             color="error"
-            @click="menu = false; $refs.menu.save([])"
+            @click="$refs.menu.save([])"
           >
             Cancel
           </v-btn>

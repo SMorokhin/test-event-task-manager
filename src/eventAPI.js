@@ -90,10 +90,8 @@ export async function saveEvent (obj) {
 export async function removeEvent (eventId) {
   try {
     await axios.delete(`/event/${eventId}`)
-    // await router.push('/')
-    // location.reload()
   } catch (e) {
-    console.log(e)
+    console.log('Ошибка удаления, элемент не найден.', e)
   }
 }
 

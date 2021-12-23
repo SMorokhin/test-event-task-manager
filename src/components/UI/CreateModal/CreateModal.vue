@@ -196,9 +196,11 @@ export default {
       let result = ''
       if (this.dateTime !== null) {
         result +=
+          // Get full date in yyyy-mm-dd format
           this.dateTime.toISOString().slice(0, 10) +
           ' ' +
-          this.dateTime.toISOString().slice(11, 16)
+          // get time hh:mm
+          this.dateTime.toString().slice(16, 21)
         return result
       }
       return null
