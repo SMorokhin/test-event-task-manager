@@ -20,6 +20,7 @@ export default {
   },
   async created () {
     await this.getEventsList()
+    this.setClassToFirstHeaderDate()
   },
   methods: {
     async getEventsList () {
@@ -34,6 +35,14 @@ export default {
       const options = { weekday: 'long' }
       const day = new Intl.DateTimeFormat('en-US', options).format(new Date(date))
       return day + ' ' + date
+    },
+    /**
+     * Get first data-header element and set him class &__first
+     */
+    setClassToFirstHeaderDate () {
+      const elements = document.querySelectorAll('.date-header')
+      const first = elements[0]
+      first.classList.add('date-header__first')
     }
   },
   computed: {

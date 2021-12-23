@@ -154,8 +154,8 @@ export default {
       await eventAPI.saveEvent({
         title: this.title,
         description: this.description,
-        begDate: this.dateTimeToIsoString,
-        endDate: this.dateTimeToIsoString,
+        begDate: this.begDateTimeToIsoString,
+        endDate: this.endDateTimeToIsoString,
         participant: this.participantsList,
         eventTypeId: this.getEventTypeId,
         repeat: this.repeat
@@ -189,21 +189,22 @@ export default {
       } return null
     },
     /**
-     * Parsing date to "yyyy-mm-dd hh:mm" format
+     * Parsing beg date to "yyyy-mm-dd hh:mm" format
      * @returns {string|null}
      */
-    dateTimeToIsoString () {
-      let result = ''
+    begDateTimeToIsoString () {
       if (this.dateTime !== null) {
-        result +=
-          // Get full date in yyyy-mm-dd format
-          this.dateTime.toISOString().slice(0, 10) +
-          ' ' +
-          // get time hh:mm
-          this.dateTime.toString().slice(16, 21)
-        return result
-      }
-      return null
+        return this.dateTime[0].toISOString().slice(0, 10) + ' ' + this.dateTime[1]
+      } return null
+    },
+    /**
+     * Parsing end date to "yyyy-mm-dd hh:mm" format
+     * @returns {string|null}
+     */
+    endDateTimeToIsoString () {
+      if (this.dateTime !== null) {
+        return this.dateTime[0].toISOString().slice(0, 10) + ' ' + this.dateTime[2]
+      } return null
     },
     /**
      * Validates input blocks
