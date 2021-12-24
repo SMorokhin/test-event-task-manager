@@ -13,14 +13,15 @@
             <div class="head__time">
               <div :style="{ background: eventInfo.category.color }"
                    class="pe-md-4 rounded-circle d-inline-block"
-              >&nbsp;</div>
+              >&nbsp;
+              </div>
               {{ this.getTimeLine }}
             </div>
           </div>
         </v-col>
         <v-col cols="auto">
           <vertical-burger-menu
-            @removeEvent="removeEvent"
+            @removeEvent="remove"
             :list-items="listItemsProps">
           </vertical-burger-menu>
         </v-col>

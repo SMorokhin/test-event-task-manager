@@ -1,5 +1,4 @@
 import axios from './axios'
-// import router from './router'
 
 /**
  * Get event by ID
@@ -8,15 +7,16 @@ import axios from './axios'
  */
 export async function getEventDescription (id) {
   try {
-    let response = await axios.get('/event', {
-      params: {
-        id
-      }
-    })
-    response = addEventCategoryToEvent(response.data)
-    return response
+    const [events, categories] = await Promise.all([
+      axios.get('/events', {
+        params: {
+          id
+        }
+      }),
+      axios.get('/event-categories')
+    ])
+    return joinEventsWithCategories(events.data, categories.data)
   } catch (e) {
-    console.log('ERROR!')
     console.log(e)
   }
 }
@@ -27,7 +27,7 @@ export async function getEventDescription (id) {
  */
 export async function getEventType () {
   try {
-    const response = await axios.get('/eventCategory')
+    const response = await axios.get('/event-categories')
     return response.data
   } catch (e) {
     console.log(e)
@@ -40,9 +40,11 @@ export async function getEventType () {
  */
 export async function getEventsList () {
   try {
-    let response = await axios.get('/event')
-    response = addEventCategoryToEvent(response.data)
-    return response
+    const [events, categories] = await Promise.all([
+      axios.get('/events'),
+      axios.get('/event-categories')
+    ])
+    return joinEventsWithCategories(events.data, categories.data)
   } catch (e) {
     console.log(e)
   }
@@ -54,7 +56,7 @@ export async function getEventsList () {
  */
 export async function getParticipants () {
   try {
-    const response = await axios.get('/employee')
+    const response = await axios.get('/employees')
     return response.data
   } catch (e) {
     console.log(e)
@@ -67,19 +69,16 @@ export async function getParticipants () {
  * @returns {Promise<void>}
  */
 export async function saveEvent (obj) {
-  try {
-    await axios.post('/event', {
-      name: obj.title,
-      description: obj.description,
-      begDate: obj.begDate,
-      endDate: obj.endDate,
-      participant: obj.participant,
-      eventTypeId: obj.eventTypeId,
-      repeat: obj.repeat
-    })
-  } catch (e) {
-    console.log(e)
-  }
+  const response = await axios.post('/events', {
+    name: obj.title,
+    description: obj.description,
+    begDate: obj.begDate,
+    endDate: obj.endDate,
+    participant: obj.participant,
+    eventTypeId: obj.eventTypeId,
+    repeat: obj.repeat
+  })
+  console.log(response.data)
 }
 
 /**
@@ -89,9 +88,10 @@ export async function saveEvent (obj) {
  */
 export async function removeEvent (eventId) {
   try {
-    await axios.delete(`/event/${eventId}`)
+    await axios.delete(`/events/${eventId}`)
+    return eventId
   } catch (e) {
-    console.log('Ошибка удаления, элемент не найден.', e)
+    console.log('Ошибка удаления, элемент не найден:\n', e)
   }
 }
 
@@ -99,18 +99,20 @@ export async function removeEvent (eventId) {
  * Returns merged data of event list with event category
  * @returns {Promise<*>}
  */
-async function addEventCategoryToEvent (eventList) {
-  try {
-    const response = await axios.get('/eventCategory')
-    const eventType = response.data
-    eventList.forEach(obj => {
-      obj.category = eventType.find(el => {
-        return el.id === obj.eventTypeId
-      })
-      delete obj.eventTypeId
+async function joinEventsWithCategories (events, categories) {
+  const map = categories.reduce((map, category) => {
+    return Object.assign(map, {
+      [category.id]: category
     })
-    return eventList
-  } catch (e) {
-    console.log(e)
-  }
+  }, {})
+  return events.map(evt => {
+    const {
+      eventTypeId,
+      ...data
+    } = evt
+    return {
+      ...data,
+      category: map[eventTypeId]
+    }
+  })
 }

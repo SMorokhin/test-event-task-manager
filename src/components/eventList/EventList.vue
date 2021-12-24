@@ -1,7 +1,7 @@
 <template>
   <div class="list-container" id="list-container">
     <div
-      v-for="(el, idx) in this.groupEventList"
+      v-for="(el, idx) in groupEventList"
       :key="el.id"
     >
       <div class="date-header">{{ idx }}</div>
@@ -9,12 +9,8 @@
         v-for="data in el"
         :key="data.id"
         class="event-description"
-        :class="{
-          active: $route.params.id === data.id,
-          active__success: $route.params.id === data.id && data.category.id === 1,
-          active__warning: $route.params.id === data.id && data.category.id === 2,
-          active__error: $route.params.id === data.id && data.category.id === 3
-        }"
+        :class="{ active: currentEventId === data.id }"
+        :style="isActiveStyle"
       >
         <router-link class="routerLink"
           :to="{

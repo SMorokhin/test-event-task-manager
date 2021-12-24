@@ -2,28 +2,28 @@
   <v-app style="background: #E5E5E5">
     <v-main>
       <v-container class="container">
-        <div class="header-name">
-          Events
-        </div>
-        <div class="d-flex mb-15">
-          <div>
-            <search v-model="searchText"></search>
+        <event-container :params="params">
+          <div class="header-name">
+            Events
           </div>
-          <div>
-            <date-picker v-model="searchDates"></date-picker>
+          <div class="d-flex mb-15">
+            <div>
+              <search v-model="searchText"/>
+            </div>
+            <div>
+              <date-picker v-model="searchDates"/>
+            </div>
+            <div class="btn">
+              <create-modal @getEventsList="getEventList"/>
+            </div>
           </div>
-          <div class="btn">
-            <create-modal @getEventsList="pGetEventsList"></create-modal>
-          </div>
-        </div>
-        <div class="d-flex flex-row justify-lg-space-between">
-          <event-list
-            ref="cGetEventsList"
-            :search-text="searchText"
+          <div class="d-flex flex-row justify-lg-space-between">
+            <event-list-container
             :search-dates="searchDates"
-          ></event-list>
-          <router-view @removeEvent="pGetEventsList"/>
-        </div>
+            :search-text="searchText"/>
+            <router-view/>
+          </div>
+        </event-container>
       </v-container>
     </v-main>
   </v-app>
@@ -31,29 +31,51 @@
 
 <script>
 
-import EventList from './components/eventList/EventList.vue'
 import DatePicker from './components/UI/datePicker/DatePicker.vue'
 import Search from './components/UI/search/Search.vue'
 import CreateModal from './components/UI/CreateModal/CreateModal'
+import EventContainer from './Containers/EventContainer'
+import EventListContainer from './Containers/EventListContainer'
+
+const DEFAULT_REQUEST_ARGS = {
+  date: [],
+  search: null
+}
 
 export default {
   name: 'App',
   components: {
-    EventList,
     DatePicker,
     Search,
-    CreateModal
+    CreateModal,
+    EventContainer,
+    EventListContainer
   },
   data: () => ({
     searchText: '',
-    searchDates: []
+    searchDates: [],
+    params: {
+      ...DEFAULT_REQUEST_ARGS
+    },
+    eventData: []
   }),
-  computed: {
-  },
-  methods: {
-    pGetEventsList () {
-      this.$refs.cGetEventsList.getEventsList()
+  watch: {
+    searchText: {
+      immediate: true,
+      handler () {
+        this.params.search = this.searchText
+      }
+    },
+    searchDates: {
+      immediate: true,
+      handler () {
+        this.params.date = this.searchDates
+      }
     }
+  },
+  computed: {},
+  methods: {
+    getEventList () {}
   }
 }
 </script>
