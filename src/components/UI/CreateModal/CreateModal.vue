@@ -109,7 +109,6 @@
 </template>
 
 <script>
-import * as eventAPI from '../../../eventAPI'
 
 export default {
   name: 'CreateModal',
@@ -134,16 +133,23 @@ export default {
     }
   },
 
+  watch: {
+    eventData: {
+      deep: true,
+      immediate: true,
+      handler () {
+        this.eventCategory = this.eventData.eventCategory
+        this.participants = this.eventData.participants
+      }
+    }
+  },
+
   inject: [
     'addNewEventToEventList',
     'getEventDescription',
-    'saveEvent'
+    'saveEvent',
+    'eventData'
   ],
-
-  async created () {
-    await this.getEventType()
-    await this.getParticipants()
-  },
 
   methods: {
     clearFields () {
@@ -153,14 +159,6 @@ export default {
       this.selectedEventCategory = ''
       this.selectedParticipant = []
       this.repeat = false
-    },
-
-    async getEventType () {
-      this.eventCategory = await eventAPI.getEventType()
-    },
-
-    async getParticipants () {
-      this.participants = await eventAPI.getParticipants()
     },
 
     async save () {

@@ -26,6 +26,14 @@ export default {
       enumerable: true,
       get: () => this.eventInfo
     })
+    Object.defineProperty(eventData, 'eventCategory', {
+      enumerable: true,
+      get: () => this.eventCategory
+    })
+    Object.defineProperty(eventData, 'participants', {
+      enumerable: true,
+      get: () => this.participants
+    })
     return {
       removeEvent: this.removeEvent,
       getEventsList: this.getEventsList,
@@ -41,7 +49,9 @@ export default {
       searchText: null,
       searchDates: null,
       eventList: null,
-      eventInfo: null
+      eventInfo: null,
+      eventCategory: [],
+      participants: []
     }
   },
 
@@ -57,6 +67,8 @@ export default {
   async created () {
     await this.getEventsList()
     await this.getEventDescription(this.$route.params.id)
+    await this.getEventType()
+    await this.getParticipants()
   },
 
   methods: {
@@ -92,9 +104,15 @@ export default {
 
     addNewEventToEventList (newEvent) {
       this.eventList.push(newEvent)
-    }
-  },
+    },
 
-  computed: {}
+    async getEventType () {
+      this.eventCategory = await eventAPI.getEventType()
+    },
+
+    async getParticipants () {
+      this.participants = await eventAPI.getParticipants()
+    }
+  }
 }
 </script>
