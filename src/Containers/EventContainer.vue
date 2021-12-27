@@ -30,6 +30,8 @@ export default {
       removeEvent: this.removeEvent,
       getEventsList: this.getEventsList,
       getEventDescription: this.getEventDescription,
+      addNewEventToEventList: this.addNewEventToEventList,
+      saveEvent: this.saveEvent,
       eventData
     }
   },
@@ -77,19 +79,22 @@ export default {
 
     async getEventDescription (id) {
       this.eventInfo = (await eventAPI.getEventDescription(id)).pop()
+    },
+
+    async saveEvent (obj) {
+      const response = await eventAPI.saveEvent({
+        ...obj
+      })
+      this.eventInfo = response.pop()
+      this.addNewEventToEventList(this.eventInfo)
+      await this.$router.push(`/${this.eventInfo.id}`)
+    },
+
+    addNewEventToEventList (newEvent) {
+      this.eventList.push(newEvent)
     }
   },
 
-  computed: {
-  }
-  //
-  // render (h) {
-  //   return h(this.$slots.default, {
-  //     props: {
-  //       events: this.events,
-  //       reset: this.reset
-  //     }
-  //   })
-  // }
+  computed: {}
 }
 </script>

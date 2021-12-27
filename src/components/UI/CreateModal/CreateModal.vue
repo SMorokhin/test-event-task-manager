@@ -98,7 +98,7 @@
         <v-btn
           color="blue darken-1"
           text
-          @click="saveEvent()"
+          @click="save()"
           :disabled="!formValid"
         >
           Save
@@ -132,6 +132,9 @@ export default {
     }
   },
   inject: [
+    'addNewEventToEventList',
+    'getEventDescription',
+    'saveEvent'
   ],
   async created () {
     await this.getEventType()
@@ -152,10 +155,10 @@ export default {
     async getParticipants () {
       this.participants = await eventAPI.getParticipants()
     },
-    async saveEvent () {
+    async save () {
       this.dialog = false
-      await eventAPI.saveEvent({
-        title: this.title,
+      await this.saveEvent({
+        name: this.title,
         description: this.description,
         begDate: this.begDateTimeToIsoString,
         endDate: this.endDateTimeToIsoString,
@@ -164,7 +167,6 @@ export default {
         repeat: this.repeat
       })
       this.clearFields()
-      this.$emit('getEventsList')
     }
   },
   computed: {
@@ -197,7 +199,6 @@ export default {
      */
     begDateTimeToIsoString () {
       if (this.dateTime !== null) {
-        console.log(this.dateTime[0].toISOString())
         return this.dateTime[0].toISOString().slice(0, 10) + ' ' + this.dateTime[1]
       } return null
     },

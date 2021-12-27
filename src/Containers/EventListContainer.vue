@@ -1,7 +1,6 @@
 <template>
   <div>
     <event-list
-      v-if="true"
       :group-event-list="groupEventList"
       :current-event-id="currentEventId"
       :is-active-style="isActiveStyle"
@@ -18,17 +17,10 @@ export default {
   },
 
   props: {
-    searchText: {
-      type: String,
-      default: ''
-    },
-    searchDates: {
-      type: Array,
-      default: null
+    params: {
+      type: Object,
+      required: true
     }
-  },
-
-  provide () {
   },
 
   data () {
@@ -66,14 +58,15 @@ export default {
   computed: {
     isActiveStyle () {
       return this.eventData.eventInfo
-        ? { borderRight: `3px solid ${this.eventData.eventInfo.category.color}` }
+        ? {
+          borderRight: `3px solid ${this.eventData.eventInfo.category.color}`,
+          background: 'rgba(59, 130, 246, .1)',
+          borderRadius: '8px 2px 2px 8px'
+        }
         : null
     },
     currentEventId () {
       return this.eventData.eventInfo ? this.eventData.eventInfo.id : null
-    },
-    isActive () {
-      return this.isActiveStyle && this.currentEventId
     },
     /**
      * Filter event list by searchText parameter
@@ -90,9 +83,10 @@ export default {
      */
     filteredDates () {
       if (this.searchDates.length !== 2) return this.eventListDates
-      // this.searchDates.sort()
+      const SortDates = this.searchDates
+      SortDates.sort()
       return this.eventListDates.filter(date => {
-        return (this.searchDates[0] <= date && this.searchDates[1] >= date)
+        return (SortDates[0] <= date && SortDates[1] >= date)
       })
     },
     /**
@@ -101,7 +95,7 @@ export default {
      */
     eventListDates () {
       if (this.eventList) {
-        const dateList = this.eventList.map((el, idx) => {
+        const dateList = this.eventList.map((el) => {
           return el.endDate.slice(0, 10)
         })
         return dateList.reduce((result, item) => {
@@ -128,6 +122,14 @@ export default {
         })
       }
       return result
+    },
+
+    searchText () {
+      return this.params.search
+    },
+
+    searchDates () {
+      return this.params.date
     }
   }
 }

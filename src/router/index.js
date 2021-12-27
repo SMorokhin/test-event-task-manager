@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-// import Home from '../views/Home.vue'
 import EventDescription from '../components/eventDescription/EventDescription.vue'
 Vue.use(VueRouter)
 

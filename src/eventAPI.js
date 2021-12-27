@@ -64,21 +64,16 @@ export async function getParticipants () {
 }
 
 /**
- * Save new event
+ * Save new event. Return new event with joined category
  * @param obj
  * @returns {Promise<void>}
  */
 export async function saveEvent (obj) {
-  const response = await axios.post('/events', {
-    name: obj.title,
-    description: obj.description,
-    begDate: obj.begDate,
-    endDate: obj.endDate,
-    participant: obj.participant,
-    eventTypeId: obj.eventTypeId,
-    repeat: obj.repeat
-  })
-  console.log(response.data)
+  const [response, categories] = await Promise.all([axios.post('/events', {
+    ...obj
+  }),
+  axios.get('/event-categories')])
+  return joinEventsWithCategories([response.data], categories.data)
 }
 
 /**

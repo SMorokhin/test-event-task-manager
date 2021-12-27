@@ -11,5 +11,13 @@ export default {
     isActiveStyle: {
       type: Object
     }
+  },
+
+  filters: {
+    getTimeLine (value) {
+      return value.begDate.slice(10) +
+        ' - ' +
+        value.endDate.slice(10)
+    }
   }
 }

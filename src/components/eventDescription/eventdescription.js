@@ -22,7 +22,6 @@ export default {
     VerticalBurgerMenu
   },
   async created () {
-    // await this.getEventDescription(this.$route.params.id)
     this.eventInfo = this.eventData.eventInfo
     this.loaded = true
   },
@@ -60,10 +59,12 @@ export default {
      * @returns {string}
      */
     getLongDay () {
-      const options = { weekday: 'long' }
       const date = new Date(this.eventInfo.endDate)
-      const day = new Intl.DateTimeFormat('en-US', options).format(date)
-      return day
+      // get day format m/d/yyyy
+      const day = new Intl.DateTimeFormat('en-US').format(date)
+      // get name of week
+      const WeekDay = new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(date)
+      return WeekDay + ' ' + day
     },
     /**
      * Get time interval of event activity

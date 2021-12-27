@@ -14,13 +14,11 @@
               <date-picker v-model="searchDates"/>
             </div>
             <div class="btn">
-              <create-modal @getEventsList="getEventList"/>
+              <create-modal/>
             </div>
           </div>
           <div class="d-flex flex-row justify-lg-space-between">
-            <event-list-container
-            :search-dates="searchDates"
-            :search-text="searchText"/>
+            <event-list-container :params="params"/>
             <router-view/>
           </div>
         </event-container>
@@ -72,12 +70,9 @@ export default {
         this.params.date = this.searchDates
       }
     }
-  },
-  computed: {},
-  methods: {
-    getEventList () {}
   }
 }
+
 </script>
 
 <style>

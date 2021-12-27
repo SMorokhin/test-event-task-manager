@@ -8,7 +8,7 @@
           </div>
           <div class="d-flex">
             <div class="head__day">
-              {{ this.getLongDay }}&nbsp;{{ this.eventInfo.begDate.slice(0, 10) }}
+              {{ this.getLongDay }}
             </div>
             <div class="head__time">
               <div :style="{ background: eventInfo.category.color }"
