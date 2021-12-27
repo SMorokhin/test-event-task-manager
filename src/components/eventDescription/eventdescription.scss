@@ -8,12 +8,20 @@
 
 .description-content {
   overflow-y: scroll;
-  max-height: 450px
+  max-height: 450px;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 18.75px;
+}
+
+.v-application .rounded-circle {
+  font-size: 5px;
+  vertical-align: text-top;
 }
 
 .description-content::-webkit-scrollbar {
   width: 5px;
-  background-color: #ffffff;
+  background: rgba(0, 0, 0, 0);
 }
 
 .description-content::-webkit-scrollbar-thumb {
@@ -23,7 +31,7 @@
 
 .description-content::-webkit-scrollbar-track {
   border-radius: 5px;
-  background-color: #ffffff;
+  background: rgba(0, 0, 0, 0);
 }
 
 .participant-container {
@@ -33,12 +41,21 @@
 }
 
 .head {
+  &__name {
+    font-weight: 500;
+    font-size: 16px;
+  }
+
   &__day {
     color: #3B82F6;
+    font-size: 13px;
+    font-weight: 700;
     margin-right: 8px;
   }
+
   &__time {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
+    align-self: center;
   }
 }

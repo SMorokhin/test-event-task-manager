@@ -36,9 +36,9 @@
           <v-btn
             text
             color="error"
-            @click="$refs.menu.save([])"
+            @click="clearDates"
           >
-            Cancel
+            Clear
           </v-btn>
           <v-btn
             text

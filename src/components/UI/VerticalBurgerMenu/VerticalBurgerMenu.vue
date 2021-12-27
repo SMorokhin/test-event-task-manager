@@ -29,12 +29,14 @@
 <script>
 export default {
   name: 'VerticalBurgerMenu',
+
   props: {
     listItems: {
       type: Array,
       required: true
     }
   },
+
   methods: {
     emittedEvent (method) {
       this.$emit(method)

@@ -3,7 +3,7 @@
     <div v-if="loaded && eventInfo">
       <v-row justify="space-between">
         <v-col cols="auto">
-          <div class="head">
+          <div class="head__name">
             {{ this.eventInfo.name }}
           </div>
           <div class="d-flex">
@@ -12,7 +12,7 @@
             </div>
             <div class="head__time">
               <div :style="{ background: eventInfo.category.color }"
-                   class="pe-md-4 rounded-circle d-inline-block"
+                   class="pe-md-2 rounded-circle d-inline-block"
               >&nbsp;
               </div>
               {{ this.getTimeLine }}

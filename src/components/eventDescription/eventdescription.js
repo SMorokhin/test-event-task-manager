@@ -2,6 +2,7 @@ import VerticalBurgerMenu from '../UI/VerticalBurgerMenu/VerticalBurgerMenu'
 
 export default {
   name: 'EventDescription',
+
   data () {
     return {
       listItemsProps: [{
@@ -9,22 +10,25 @@ export default {
         method: 'removeEvent'
       }],
       loaded: false,
-      isLoading: false,
       eventInfo: null
     }
   },
+
   inject: [
     'removeEvent',
     'getEventDescription',
     'eventData'
   ],
+
   components: {
     VerticalBurgerMenu
   },
+
   async created () {
-    this.eventInfo = this.eventData.eventInfo
+    // this.eventInfo = this.eventData.eventInfo
     this.loaded = true
   },
+
   watch: {
     '$route.params.id': {
       async handler () {
@@ -33,6 +37,7 @@ export default {
       immediate: true,
       deep: true
     },
+
     eventData: {
       deep: true,
       immediate: true,
@@ -41,10 +46,12 @@ export default {
       }
     }
   },
+
   methods: {
     async getDescription (id) {
       await this.getEventDescription(id)
     },
+
     /**
      * Remove event from the list
      * @returns {Promise<void>}
@@ -53,6 +60,7 @@ export default {
       await this.removeEvent(this.eventInfo.id)
     }
   },
+
   computed: {
     /**
      * Get long name of day
@@ -66,6 +74,7 @@ export default {
       const WeekDay = new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(date)
       return WeekDay + ' ' + day
     },
+
     /**
      * Get time interval of event activity
      * @returns {string}

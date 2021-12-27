@@ -46,6 +46,7 @@ export default {
       return day + ' ' + date
     }
   },
+
   watch: {
     eventData: {
       deep: true,
@@ -55,6 +56,7 @@ export default {
       }
     }
   },
+
   computed: {
     isActiveStyle () {
       return this.eventData.eventInfo
@@ -65,30 +67,41 @@ export default {
         }
         : null
     },
+
     currentEventId () {
       return this.eventData.eventInfo ? this.eventData.eventInfo.id : null
     },
+
     /**
      * Filter event list by searchText parameter
      * @returns {*[]}
      */
     filteredEventList () {
       return this.eventList.filter(el => {
-        return el.name.toLowerCase().includes(this.searchText.toLowerCase()) ? el : null
+        return el.name
+          .toLowerCase()
+          .trim()
+          .includes(this.searchText
+            .toLowerCase()
+            .trim())
+          ? el
+          : null
       })
     },
+
     /**
      * Filter dates by searchDates parameter
      * @returns {*[]}
      */
     filteredDates () {
       if (this.searchDates.length !== 2) return this.eventListDates
-      const SortDates = this.searchDates
-      SortDates.sort()
+      const sortDates = this.searchDates
+      sortDates.sort()
       return this.eventListDates.filter(date => {
-        return (SortDates[0] <= date && SortDates[1] >= date)
+        return (sortDates[0] <= date && sortDates[1] >= date)
       })
     },
+
     /**
      * Get unique dates of each event
      * @returns {*[]}
@@ -104,6 +117,7 @@ export default {
       }
       return null
     },
+
     /**
      * Group list of events by date
      * @returns {{}}

@@ -5,7 +5,7 @@
       v-model="modelValue"
       label="Search"
       solo
-      :style="{ width: this.width}"
+      :style="{ width: this.width }"
       prepend-inner-icon="mdi-magnify"
     ></v-text-field>
   </div>

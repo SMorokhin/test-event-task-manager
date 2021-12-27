@@ -1,5 +1,5 @@
 <template>
-  <v-app style="background: #E5E5E5">
+  <v-app class="app">
     <v-main>
       <v-container class="container">
         <event-container :params="params">
@@ -13,6 +13,12 @@
             <div>
               <date-picker v-model="searchDates"/>
             </div>
+            <v-btn color="warning"
+                   text
+                   class="ml-2"
+                   @click="reset">
+              Reset
+            </v-btn>
             <div class="btn">
               <create-modal/>
             </div>
@@ -37,11 +43,12 @@ import EventListContainer from './Containers/EventListContainer'
 
 const DEFAULT_REQUEST_ARGS = {
   date: [],
-  search: null
+  search: ''
 }
 
 export default {
   name: 'App',
+
   components: {
     DatePicker,
     Search,
@@ -49,14 +56,18 @@ export default {
     EventContainer,
     EventListContainer
   },
-  data: () => ({
-    searchText: '',
-    searchDates: [],
-    params: {
-      ...DEFAULT_REQUEST_ARGS
-    },
-    eventData: []
-  }),
+
+  data () {
+    return {
+      searchText: '',
+      searchDates: [],
+      params: {
+        ...DEFAULT_REQUEST_ARGS
+      },
+      eventData: []
+    }
+  },
+
   watch: {
     searchText: {
       immediate: true,
@@ -64,11 +75,21 @@ export default {
         this.params.search = this.searchText
       }
     },
+
     searchDates: {
       immediate: true,
       handler () {
         this.params.date = this.searchDates
       }
+    }
+  },
+
+  methods: {
+    reset () {
+      this.params = {
+        ...DEFAULT_REQUEST_ARGS
+      }
+      this.searchText = ''
     }
   }
 }
@@ -76,6 +97,10 @@ export default {
 </script>
 
 <style>
+.app {
+  background: #E5E5E5 !important;
+}
+
 .container {
   width: 1068px;
   box-sizing: border-box;

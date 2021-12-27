@@ -113,7 +113,9 @@ import * as eventAPI from '../../../eventAPI'
 
 export default {
   name: 'CreateModal',
+
   components: {},
+
   data () {
     return {
       dialog: false,
@@ -131,15 +133,18 @@ export default {
       participants: []
     }
   },
+
   inject: [
     'addNewEventToEventList',
     'getEventDescription',
     'saveEvent'
   ],
+
   async created () {
     await this.getEventType()
     await this.getParticipants()
   },
+
   methods: {
     clearFields () {
       this.title = ''
@@ -149,12 +154,15 @@ export default {
       this.selectedParticipant = []
       this.repeat = false
     },
+
     async getEventType () {
       this.eventCategory = await eventAPI.getEventType()
     },
+
     async getParticipants () {
       this.participants = await eventAPI.getParticipants()
     },
+
     async save () {
       this.dialog = false
       await this.saveEvent({
@@ -169,6 +177,7 @@ export default {
       this.clearFields()
     }
   },
+
   computed: {
     /**
      * Returns string of participants which was selected by one line, devided by ','
@@ -179,6 +188,7 @@ export default {
       return this.selectedParticipant.reduce((acc, el, idx) =>
         idx === len ? acc + el : acc + el + ', ', '')
     },
+
     /**
      * Returns event's ID by event name
      * @returns {null|*}
@@ -193,6 +203,7 @@ export default {
         return result.id
       } return null
     },
+
     /**
      * Parsing beg date to "yyyy-mm-dd hh:mm" format
      * @returns {string|null}
@@ -202,6 +213,7 @@ export default {
         return this.dateTime[0].toISOString().slice(0, 10) + ' ' + this.dateTime[1]
       } return null
     },
+
     /**
      * Parsing end date to "yyyy-mm-dd hh:mm" format
      * @returns {string|null}
@@ -211,6 +223,7 @@ export default {
         return this.dateTime[0].toISOString().slice(0, 10) + ' ' + this.dateTime[2]
       } return null
     },
+
     /**
      * Validates input blocks
      * @returns {null|string}
