@@ -29,7 +29,6 @@ export default {
 
   async created () {
     this.loaded = true
-    this.eventInfo = this.value
   },
 
   methods: {

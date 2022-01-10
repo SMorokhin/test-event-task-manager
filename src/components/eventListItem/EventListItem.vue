@@ -1,20 +1,23 @@
 <template>
   <router-link
-    class="item"
+    class="router-link"
     :to="{
           name: 'EventDescription',
           params: {
             id: value.id,
             value: value },
         }">
-    <div
-      class="item__content"
-      @click="isActive"
-      :class="{ active: active }"
-      :style="active ? activeItemBorder : null">
-      <div class="item__date">{{ eventDate }}</div>
-      <div class="item__time">{{ timeLine }}</div>
-      <div class="item__name">{{ value.name }}</div>
+    <div class="item">
+      <div
+        class="item__content"
+        @click="isActive"
+        :class="{ active: active }"
+        :style="active ? activeItemBorder : null">
+        <div class="item__date"
+             :style="isToday">{{ eventDate }}</div>
+        <div class="item__time">{{ timeLine }}</div>
+        <div class="item__name">{{ value.name }}</div>
+      </div>
     </div>
   </router-link>
 </template>
@@ -39,6 +42,11 @@ export default {
 
     active: {
       type: Boolean,
+      required: true
+    },
+
+    index: {
+      type: Number,
       required: true
     }
   },
@@ -69,6 +77,12 @@ export default {
         .format(new Date(this.value.begDate))
         .toUpperCase()
       return weekday + ' ' + date
+    },
+
+    isToday () {
+      return new Intl.DateTimeFormat().format(new Date()) === Intl.DateTimeFormat().format(new Date(this.value.begDate))
+        ? { color: '#3B82F6' }
+        : null
     }
   }
 }
@@ -80,14 +94,20 @@ export default {
   border-radius: 8px 2px 2px 8px;
   color: black;
 }
-
-.item {
+.router-link{
   cursor: pointer;
   text-decoration: none;
   font-size: 12px;
+}
+.item {
+  margin-bottom: 4px;
 
   &__content {
     padding: 4px;
+  }
+  &__content:hover{
+    background: rgba(59, 130, 246, .1);
+    border-radius: 8px 2px 2px 8px;
   }
 
   &__date {
@@ -103,7 +123,6 @@ export default {
 
   &__name {
     color: #BDBDBD;
-    padding-bottom: 8px;
   }
 }
 </style>

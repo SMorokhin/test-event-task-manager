@@ -26,7 +26,8 @@
               <div class="flex-column listItem">
                 <event-list-item
                   @isActive="onIsActive"
-                  v-for="event in events"
+                  v-for="(event, index) in events"
+                  :index="index"
                   :key="event.id"
                   :value="event"
                   :active="event.id === active"
@@ -74,11 +75,6 @@ export default {
   },
 
   methods: {
-    checkLoad (value) {
-      console.log(value)
-      console.log('loaded')
-    },
-
     onIsActive (value) {
       this.active = value
     },
@@ -127,5 +123,6 @@ export default {
   padding-top: 28px;
   overflow-y: scroll;
   max-height: 657px;
+  box-shadow: 0px 2px 12px rgba(37, 51, 66, 0.15);
 }
 </style>

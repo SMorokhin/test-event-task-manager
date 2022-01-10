@@ -47,15 +47,37 @@ export default {
         : this.events
     },
 
+    sortedEvents () {
+      const sortArr = this.filteredEvents
+      sortArr.sort(this.sortByField('begDate'))
+      return sortArr.reverse()
+    },
+
     eventDates () {
-      const dateArray = this.filteredEvents ? this.filteredEvents.map(event => {
-        const date = new Intl.DateTimeFormat('en-US').format(new Date(event.begDate))
-        const weekday = new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(new Date(event.begDate))
-        return weekday + ' ' + date
-      }) : null
-      dateArray.sort()
-      return new Set(dateArray)
+      return this.sortedEvents.length
+        ? new Set(this.sortedEvents.map(event => {
+          const date = new Intl.DateTimeFormat('en-US')
+            .format(new Date(event.begDate))
+          const weekday = new Intl.DateTimeFormat('en-US', { weekday: 'long' })
+            .format(new Date(event.begDate))
+            .toUpperCase()
+          return weekday + ' ' + date
+        }))
+        : null
     }
+
+    // groupedEvents () {
+    //   const res = {}
+    //
+    //   this.eventDates.forEach(date => {
+    //     const tmp = this.sortedEvents.filter(event => {
+    //       return new Intl.DateTimeFormat()
+    //         .format(new Date(event.begDate)) === new Intl.DateTimeFormat().format(new Date(date))
+    //     })
+    //     res[date] = tmp
+    //   })
+    //   return res
+    // }
   },
 
   watch: {
@@ -69,7 +91,12 @@ export default {
   },
 
   methods: {
-    reset () {},
+    reset () {
+    },
+
+    sortByField (field) {
+      return (a, b) => a[field] > b[field] ? 1 : -1
+    },
 
     async removeEvent (eventInfoId) {
       const removedId = await eventAPI.removeEvent(eventInfoId)
@@ -83,25 +110,12 @@ export default {
 
     async getEventDescription (id) {
       this.eventInfo = (await eventAPI.getEventDescription(id)).pop()
-    },
-
-    async saveEvent (obj) {
-      const response = await eventAPI.saveEvent({
-        ...obj
-      })
-      this.eventInfo = response.pop()
-      this.addNewEventToEventList(this.eventInfo)
-      await this.$router.push(`/${this.eventInfo.id}`)
-    },
-
-    addNewEventToEventList (newEvent) {
-      this.events.push(newEvent)
     }
   },
 
   render () {
     return this.$scopedSlots.default({
-      events: this.filteredEvents
+      events: this.sortedEvents
     })
   }
 }
