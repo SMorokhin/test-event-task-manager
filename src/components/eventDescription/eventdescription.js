@@ -57,19 +57,6 @@ export default {
 
   computed: {
     /**
-     * Get long name of day
-     * @returns {string}
-     */
-    getLongDay () {
-      const date = new Date(this.value.endDate)
-      // get day format m/d/yyyy
-      const day = new Intl.DateTimeFormat('en-US').format(date)
-      // get name of week
-      const WeekDay = new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(date)
-      return WeekDay + ' ' + day
-    },
-
-    /**
      * Get time interval of event activity
      * @returns {string}
      */

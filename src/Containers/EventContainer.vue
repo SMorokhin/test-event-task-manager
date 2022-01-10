@@ -106,6 +106,22 @@ export default {
 
     async getEventsList () {
       this.events = await eventAPI.getEventsList()
+
+      const today = new Intl.DateTimeFormat().format(new Date())
+      this.events.forEach(event => {
+        const date = new Intl.DateTimeFormat('en-US')
+          .format(new Date(event.begDate))
+        const weekday = new Intl.DateTimeFormat('en-US', { weekday: 'long' })
+          .format(new Date(event.begDate))
+          .toUpperCase()
+        if (today === new Intl.DateTimeFormat().format(new Date(event.begDate))) {
+          event.date = 'TODAY ' + date
+          event.dateColor = '#3B82F6'
+        } else {
+          event.date = weekday + ' ' + date
+          event.dateColor = null
+        }
+      })
     },
 
     async getEventDescription (id) {

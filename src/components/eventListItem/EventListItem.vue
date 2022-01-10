@@ -14,7 +14,7 @@
         :class="{ active: active }"
         :style="active ? activeItemBorder : null">
         <div class="item__date"
-             :style="isToday">{{ eventDate }}</div>
+             :style="{ color: value.dateColor }">{{ value.date }}</div>
         <div class="item__time">{{ timeLine }}</div>
         <div class="item__name">{{ value.name }}</div>
       </div>
@@ -68,21 +68,6 @@ export default {
         till.getHours() +
         ':' +
         (till.getMinutes() < 10 ? '0' : '') + till.getMinutes()
-    },
-
-    eventDate () {
-      const date = new Intl.DateTimeFormat('en-US')
-        .format(new Date(this.value.begDate))
-      const weekday = new Intl.DateTimeFormat('en-US', { weekday: 'long' })
-        .format(new Date(this.value.begDate))
-        .toUpperCase()
-      return weekday + ' ' + date
-    },
-
-    isToday () {
-      return new Intl.DateTimeFormat().format(new Date()) === Intl.DateTimeFormat().format(new Date(this.value.begDate))
-        ? { color: '#3B82F6' }
-        : null
     }
   }
 }

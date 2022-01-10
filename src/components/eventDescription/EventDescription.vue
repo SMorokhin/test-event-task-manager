@@ -12,7 +12,7 @@
             </div>
             <div class="d-flex">
               <div class="head__day">
-                {{ this.getLongDay }}
+                {{ eventInfo.date }}
               </div>
               <div class="head__time">
                 <div :style="{ background: eventInfo.category.color }"
