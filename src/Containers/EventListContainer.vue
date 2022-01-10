@@ -1,13 +1,3 @@
-<template>
-  <div>
-    <event-list
-      :group-event-list="groupEventList"
-      :current-event-id="currentEventId"
-      :is-active-style="isActiveStyle"
-    />
-  </div>
-</template>
-
 <script>
 import EventList from '../components/eventList/EventList.vue'
 

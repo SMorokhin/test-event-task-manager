@@ -1,49 +1,56 @@
 <template>
   <v-app class="app">
-    <v-main>
-      <v-container class="container">
-        <event-container :params="params">
-          <div class="header-name">
-            Events
-          </div>
-          <div class="d-flex mb-15">
-            <div>
-              <search v-model="searchText"/>
+    <v-main
+    >
+      <event-container :params="params">
+        <template v-slot:default="{ events }">
+          <v-container>
+            <div class="flex-row mb-15">
+              <div class="header-name">Events</div>
+              <div class="toolbar">
+              <div>
+                <search v-model="params.search"/>
+              </div>
+              <div>
+                <date-picker v-model="params.dates"/>
+              </div>
+              <v-btn color="warning" text class="ml-2" @click="reset">
+                Reset
+              </v-btn>
+              <div class="btn">
+                <create-modal/>
+              </div>
+              </div>
             </div>
-            <div>
-              <date-picker v-model="searchDates"/>
+            <div class="d-flex flex-row justify-lg-space-between">
+              <div class="flex-column listItem">
+                <event-list-item
+                  @isActive="onIsActive"
+                  v-for="event in events"
+                  :key="event.id"
+                  :value="event"
+                  :active="event.id === active"
+                />
+              </div>
+              <router-view/>
             </div>
-            <v-btn color="warning"
-                   text
-                   class="ml-2"
-                   @click="reset">
-              Reset
-            </v-btn>
-            <div class="btn">
-              <create-modal/>
-            </div>
-          </div>
-          <div class="d-flex flex-row justify-lg-space-between">
-            <event-list-container :params="params"/>
-            <router-view/>
-          </div>
-        </event-container>
-      </v-container>
+          </v-container>
+        </template>
+      </event-container>
     </v-main>
   </v-app>
 </template>
 
 <script>
-
 import DatePicker from './components/UI/datePicker/DatePicker.vue'
 import Search from './components/UI/search/Search.vue'
 import CreateModal from './components/UI/CreateModal/CreateModal'
 import EventContainer from './Containers/EventContainer'
-import EventListContainer from './Containers/EventListContainer'
+import EventListItem from './components/eventListItem/EventListItem'
 
 const DEFAULT_REQUEST_ARGS = {
-  date: [],
-  search: ''
+  dates: null,
+  search: null
 }
 
 export default {
@@ -54,51 +61,44 @@ export default {
     Search,
     CreateModal,
     EventContainer,
-    EventListContainer
+    EventListItem
   },
 
   data () {
     return {
-      searchText: '',
-      searchDates: [],
       params: {
         ...DEFAULT_REQUEST_ARGS
       },
-      eventData: []
-    }
-  },
-
-  watch: {
-    searchText: {
-      immediate: true,
-      handler () {
-        this.params.search = this.searchText
-      }
-    },
-
-    searchDates: {
-      immediate: true,
-      handler () {
-        this.params.date = this.searchDates
-      }
+      active: null
     }
   },
 
   methods: {
+    checkLoad (value) {
+      console.log(value)
+      console.log('loaded')
+    },
+
+    onIsActive (value) {
+      this.active = value
+    },
+
     reset () {
       this.params = {
         ...DEFAULT_REQUEST_ARGS
       }
-      this.searchText = ''
     }
   }
 }
-
 </script>
 
 <style>
+.toolbar {
+  display: flex;
+}
+
 .app {
-  background: #E5E5E5 !important;
+  background: #e5e5e5 !important;
 }
 
 .container {
@@ -112,10 +112,20 @@ export default {
   margin-top: 68px;
   margin-bottom: 41px;
   font-size: 24px;
-  font-width: 500;
 }
 
 .btn {
   margin-left: auto;
+}
+
+.listItem {
+  background: white;
+  width: 340px;
+  border-radius: 8px;
+  padding-left: 28px;
+  padding-right: 21px;
+  padding-top: 28px;
+  overflow-y: scroll;
+  max-height: 657px;
 }
 </style>

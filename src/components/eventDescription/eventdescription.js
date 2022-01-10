@@ -14,50 +14,45 @@ export default {
     }
   },
 
-  inject: [
-    'removeEvent',
-    'getEventDescription',
-    'eventData'
-  ],
+  inject: ['refresh', 'remove'],
+
+  props: {
+    value: {
+      type: Object,
+      default: null
+    }
+  },
 
   components: {
     VerticalBurgerMenu
   },
 
   async created () {
-    // this.eventInfo = this.eventData.eventInfo
     this.loaded = true
-  },
-
-  watch: {
-    '$route.params.id': {
-      async handler () {
-        await this.getDescription(this.$route.params.id)
-      },
-      immediate: true,
-      deep: true
-    },
-
-    eventData: {
-      deep: true,
-      immediate: true,
-      handler () {
-        this.eventInfo = this.eventData.eventInfo
-      }
-    }
+    this.eventInfo = this.value
   },
 
   methods: {
-    async getDescription (id) {
-      await this.getEventDescription(id)
-    },
-
     /**
      * Remove event from the list
      * @returns {Promise<void>}
      */
-    async remove () {
-      await this.removeEvent(this.eventInfo.id)
+    async removeEvent () {
+      this.loaded = false
+      await this.remove(this.value.id)
+      await this.refresh()
+      this.eventInfo = null
+      this.loaded = true
+    }
+  },
+
+  watch: {
+    value: {
+      immediate: true,
+      deep: true,
+      handler () {
+        this.eventInfo = this.value
+      }
     }
   },
 
@@ -67,7 +62,7 @@ export default {
      * @returns {string}
      */
     getLongDay () {
-      const date = new Date(this.eventInfo.endDate)
+      const date = new Date(this.value.endDate)
       // get day format m/d/yyyy
       const day = new Intl.DateTimeFormat('en-US').format(date)
       // get name of week
@@ -80,9 +75,15 @@ export default {
      * @returns {string}
      */
     getTimeLine () {
-      return this.eventInfo.begDate.slice(10) +
+      const from = new Date(this.value.begDate)
+      const till = new Date(this.value.endDate)
+      return from.getHours() +
+        ':' +
+        (from.getMinutes() < 10 ? '0' : '') + from.getMinutes() +
         ' - ' +
-        this.eventInfo.endDate.slice(10)
+        till.getHours() +
+        ':' +
+        (till.getMinutes() < 10 ? '0' : '') + till.getMinutes()
     }
   }
 }

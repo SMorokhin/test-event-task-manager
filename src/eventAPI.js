@@ -1,5 +1,13 @@
 import axios from './axios'
 
+export const CATEGORIES = Promise.resolve(axios.get('/event-categories')).then(response => {
+  return response.data
+})
+
+export const PARTICIPANTS = Promise.resolve(axios.get('/employees')).then(response => {
+  return response.data
+})
+
 /**
  * Get event by ID
  * @param id
@@ -7,28 +15,15 @@ import axios from './axios'
  */
 export async function getEventDescription (id) {
   try {
-    const [events, categories] = await Promise.all([
+    const [events] = await Promise.all([
       axios.get('/events', {
         params: {
           id
         }
-      }),
-      axios.get('/event-categories')
+      })
     ])
-    return joinEventsWithCategories(events.data, categories.data)
-  } catch (e) {
-    console.log(e)
-  }
-}
-
-/**
- * Get event type list
- * @returns {Promise<any>}
- */
-export async function getEventType () {
-  try {
-    const response = await axios.get('/event-categories')
-    return response.data
+    const categories = await CATEGORIES
+    return joinEventsWithCategories(events.data, categories)
   } catch (e) {
     console.log(e)
   }
@@ -40,24 +35,11 @@ export async function getEventType () {
  */
 export async function getEventsList () {
   try {
-    const [events, categories] = await Promise.all([
-      axios.get('/events'),
-      axios.get('/event-categories')
+    const [events] = await Promise.all([
+      axios.get('/events')
     ])
-    return joinEventsWithCategories(events.data, categories.data)
-  } catch (e) {
-    console.log(e)
-  }
-}
-
-/**
- * Get list of participants
- * @returns {Promise<*>}
- */
-export async function getParticipants () {
-  try {
-    const response = await axios.get('/employees')
-    return response.data
+    const categories = await CATEGORIES
+    return joinEventsWithCategories(events.data, categories)
   } catch (e) {
     console.log(e)
   }

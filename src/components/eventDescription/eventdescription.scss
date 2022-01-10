@@ -40,6 +40,17 @@
   font-weight: 500;
 }
 
+.loader {
+  position: relative;
+  &__inner {
+    position: absolute;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, .7);
+  }
+}
+
 .head {
   &__name {
     font-weight: 500;

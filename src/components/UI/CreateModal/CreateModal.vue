@@ -14,111 +14,119 @@
         Create
       </v-btn>
     </template>
-    <v-card>
-      <v-card-title>
-        <span class="text-h5">Create Event</span>
-      </v-card-title>
-      <v-card-text>
-        <div class="d-flex justify-lg-space-between">
-          <div class="d-flex">
+        <v-card :disabled="!loaded">
+          <v-card-title>
+            <span class="text-h5">Create Event</span>
+          </v-card-title>
+          <v-card-text>
+            <div class="d-flex justify-lg-space-between">
+              <div class="d-flex">
+                <div class="d-flex flex-column">
+                  Title
+                  <v-text-field
+                    label="Title"
+                    solo
+                    required
+                    v-model="title"
+                  ></v-text-field>
+                </div>
+              </div>
+              <div class="d-flex">
+                <div class="flex-column">
+                  Date
+                  <v-datetime-picker
+                    label="Select date and time"
+                    :text-field-props="textFieldProps"
+                    v-model="dateTime"
+                  >
+                    <template slot="dateIcon">
+                      <v-icon>mdi-calendar</v-icon>
+                    </template>
+                    <template slot="timeIcon">
+                      <v-icon>mdi-clock</v-icon>
+                    </template>
+                  </v-datetime-picker>
+                  <v-checkbox
+                    v-model="repeat"
+                    label="Repeat"
+                  ></v-checkbox>
+                </div>
+              </div>
+            </div>
+            <div class="d-flex justify-lg-space-between">
+              <div class="flex-column">
+                Category
+                <v-select
+                  solo
+                  v-model="selectedEventCategory"
+                  :items="eventCategory.map(e => e.name)"
+                ></v-select>
+              </div>
+              <div class="flex-column">
+                Participants
+                <v-select
+                  prepend-inner-icon="mdi-magnify"
+                  solo
+                  chips
+                  multiple
+                  attach
+                  deletable-chips
+                  v-model="selectedParticipant"
+                  :items="participants.map(e => e.fls)"
+                ></v-select>
+              </div>
+            </div>
             <div class="d-flex flex-column">
-              Title
-              <v-text-field
-                label="Title"
+              Description
+              <v-textarea
                 solo
-                required
-                v-model="title"
-              ></v-text-field>
+                v-model="description"
+                name="input-7-4"
+                label="Description"
+              ></v-textarea>
             </div>
-          </div>
-          <div class="d-flex">
-            <div class="flex-column">
-              Date
-              <v-datetime-picker
-                label="Select date and time"
-                :text-field-props="textFieldProps"
-                v-model="dateTime"
-              >
-                <template slot="dateIcon">
-                  <v-icon>mdi-calendar</v-icon>
-                </template>
-                <template slot="timeIcon">
-                  <v-icon>mdi-clock</v-icon>
-                </template>
-              </v-datetime-picker>
-              <v-checkbox
-                v-model="repeat"
-                label="Repeat"
-              ></v-checkbox>
-            </div>
-          </div>
-        </div>
-        <div class="d-flex justify-lg-space-between">
-          <div class="flex-column">
-            Category
-            <v-select
-              solo
-              v-model="selectedEventCategory"
-              :items="eventCategory.map(e => e.name)"
-            ></v-select>
-          </div>
-          <div class="flex-column">
-            Participants
-            <v-select
-              prepend-inner-icon="mdi-magnify"
-              solo
-              chips
-              multiple
-              attach
-              deletable-chips
-              v-model="selectedParticipant"
-              :items="participants.map(e => e.fls)"
-            ></v-select>
-          </div>
-        </div>
-        <div class="d-flex flex-column">
-          Description
-          <v-textarea
-            solo
-            v-model="description"
-            name="input-7-4"
-            label="Description"
-          ></v-textarea>
-        </div>
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn
-          color="error"
-          text
-          @click="dialog = false"
-        >
-          Close
-        </v-btn>
-        <v-btn
-          color="blue darken-1"
-          text
-          @click="save()"
-          :disabled="!formValid"
-        >
-          Save
-        </v-btn>
-      </v-card-actions>
-    </v-card>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+              color="error"
+              text
+              @click="dialog = false"
+            >
+              Close
+            </v-btn>
+            <v-btn
+              color="blue darken-1"
+              text
+              @click="save()"
+              :disabled="!formValid"
+            >
+              Save
+            </v-btn>
+          </v-card-actions>
+        </v-card>
   </v-dialog>
 </template>
 
 <script>
+import * as eventAPI from '../../../eventAPI'
 
 export default {
   name: 'CreateModal',
 
   components: {},
 
+  async created () {
+    this.eventCategory = await eventAPI.CATEGORIES
+    this.participants = await eventAPI.PARTICIPANTS
+    this.loaded = true
+  },
+
   data () {
     return {
       dialog: false,
       repeat: false,
+      loaded: false,
       title: '',
       description: '',
       selectedParticipant: [],
@@ -133,23 +141,7 @@ export default {
     }
   },
 
-  watch: {
-    eventData: {
-      deep: true,
-      immediate: true,
-      handler () {
-        this.eventCategory = this.eventData.eventCategory
-        this.participants = this.eventData.participants
-      }
-    }
-  },
-
-  inject: [
-    'addNewEventToEventList',
-    'getEventDescription',
-    'saveEvent',
-    'eventData'
-  ],
+  inject: ['refresh'],
 
   methods: {
     clearFields () {
@@ -162,17 +154,21 @@ export default {
     },
 
     async save () {
-      this.dialog = false
-      await this.saveEvent({
+      this.loaded = false
+      const response = await eventAPI.saveEvent({
         name: this.title,
         description: this.description,
-        begDate: this.begDateTimeToIsoString,
-        endDate: this.endDateTimeToIsoString,
+        begDate: this.dateTime,
+        endDate: this.dateTime,
         participant: this.participantsList,
         eventTypeId: this.getEventTypeId,
         repeat: this.repeat
       })
       this.clearFields()
+      console.log(response)
+      await this.refresh()
+      this.loaded = true
+      this.dialog = false
     }
   },
 
@@ -199,27 +195,8 @@ export default {
             : null
         })
         return result.id
-      } return null
-    },
-
-    /**
-     * Parsing beg date to "yyyy-mm-dd hh:mm" format
-     * @returns {string|null}
-     */
-    begDateTimeToIsoString () {
-      if (this.dateTime !== null) {
-        return this.dateTime[0].toISOString().slice(0, 10) + ' ' + this.dateTime[1]
-      } return null
-    },
-
-    /**
-     * Parsing end date to "yyyy-mm-dd hh:mm" format
-     * @returns {string|null}
-     */
-    endDateTimeToIsoString () {
-      if (this.dateTime !== null) {
-        return this.dateTime[0].toISOString().slice(0, 10) + ' ' + this.dateTime[2]
-      } return null
+      }
+      return null
     },
 
     /**

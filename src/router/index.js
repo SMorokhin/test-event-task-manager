@@ -7,7 +7,8 @@ const routes = [
   {
     path: '/:id',
     name: 'EventDescription',
-    component: EventDescription
+    component: EventDescription,
+    props: true
   }
 ]
 

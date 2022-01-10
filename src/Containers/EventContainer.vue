@@ -1,13 +1,5 @@
-<template>
-  <div>
-    <slot></slot>
-  </div>
-</template>
-
 <script>
 import * as eventAPI from '../eventAPI'
-
-const eventData = {}
 
 export default {
   props: {
@@ -18,40 +10,51 @@ export default {
   },
 
   provide () {
-    Object.defineProperty(eventData, 'eventList', {
-      enumerable: true,
-      get: () => this.eventList
-    })
-    Object.defineProperty(eventData, 'eventInfo', {
-      enumerable: true,
-      get: () => this.eventInfo
-    })
-    Object.defineProperty(eventData, 'eventCategory', {
-      enumerable: true,
-      get: () => this.eventCategory
-    })
-    Object.defineProperty(eventData, 'participants', {
-      enumerable: true,
-      get: () => this.participants
-    })
     return {
-      removeEvent: this.removeEvent,
-      getEventsList: this.getEventsList,
-      getEventDescription: this.getEventDescription,
-      addNewEventToEventList: this.addNewEventToEventList,
-      saveEvent: this.saveEvent,
-      eventData
+      refresh: this.getEventsList,
+      remove: this.removeEvent
     }
   },
 
   data () {
     return {
-      searchText: null,
-      searchDates: null,
-      eventList: null,
-      eventInfo: null,
-      eventCategory: [],
-      participants: []
+      events: []
+    }
+  },
+
+  computed: {
+    filteredEvents () {
+      const predicates = []
+
+      if (this.params.search) {
+        predicates.push((x) => x.name
+          .toLowerCase()
+          .trim()
+          .includes(this.params.search
+            .toLowerCase()
+            .trim()))
+      }
+
+      if (this.params.dates) {
+        const { from, till } = this.params.dates
+        predicates.push((x) => new Date(x.begDate) <= till && new Date(x.endDate) >= from)
+      }
+
+      return predicates.length
+        ? this.events.filter((x) =>
+          predicates.every((predicate) => predicate(x))
+        )
+        : this.events
+    },
+
+    eventDates () {
+      const dateArray = this.filteredEvents ? this.filteredEvents.map(event => {
+        const date = new Intl.DateTimeFormat('en-US').format(new Date(event.begDate))
+        const weekday = new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(new Date(event.begDate))
+        return weekday + ' ' + date
+      }) : null
+      dateArray.sort()
+      return new Set(dateArray)
     }
   },
 
@@ -60,33 +63,22 @@ export default {
       deep: true,
       immediate: true,
       handler () {
+        this.getEventsList()
       }
     }
   },
 
-  async created () {
-    await this.getEventsList()
-    await this.getEventDescription(this.$route.params.id)
-    await this.getEventType()
-    await this.getParticipants()
-  },
-
   methods: {
-    reset () {
-    },
+    reset () {},
 
     async removeEvent (eventInfoId) {
-      this.$loading(true)
       const removedId = await eventAPI.removeEvent(eventInfoId)
       await this.getEventDescription(removedId)
       await this.getEventsList()
-      this.$loading(false)
     },
 
     async getEventsList () {
-      this.$loading(true)
-      this.eventList = await eventAPI.getEventsList()
-      this.$loading(false)
+      this.events = await eventAPI.getEventsList()
     },
 
     async getEventDescription (id) {
@@ -103,16 +95,14 @@ export default {
     },
 
     addNewEventToEventList (newEvent) {
-      this.eventList.push(newEvent)
-    },
-
-    async getEventType () {
-      this.eventCategory = await eventAPI.getEventType()
-    },
-
-    async getParticipants () {
-      this.participants = await eventAPI.getParticipants()
+      this.events.push(newEvent)
     }
+  },
+
+  render () {
+    return this.$scopedSlots.default({
+      events: this.filteredEvents
+    })
   }
 }
 </script>
