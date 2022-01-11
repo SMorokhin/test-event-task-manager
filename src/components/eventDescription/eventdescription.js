@@ -14,7 +14,7 @@ export default {
     }
   },
 
-  inject: ['refresh', 'remove'],
+  inject: ['refresh', 'remove', 'getEventDescription'],
 
   props: {
     value: {
@@ -28,6 +28,7 @@ export default {
   },
 
   async created () {
+    this.eventInfo = await this.getEventDescription(this.$attrs.id)
     this.loaded = true
   },
 
@@ -61,8 +62,8 @@ export default {
      * @returns {string}
      */
     getTimeLine () {
-      const from = new Date(this.value.begDate)
-      const till = new Date(this.value.endDate)
+      const from = new Date(this.eventInfo.begDate)
+      const till = new Date(this.eventInfo.endDate)
       return from.getHours() +
         ':' +
         (from.getMinutes() < 10 ? '0' : '') + from.getMinutes() +

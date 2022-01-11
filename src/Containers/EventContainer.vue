@@ -12,7 +12,8 @@ export default {
   provide () {
     return {
       refresh: this.getEventsList,
-      remove: this.removeEvent
+      remove: this.removeEvent,
+      getEventDescription: this.getEventDescription
     }
   },
 
@@ -64,20 +65,20 @@ export default {
           return weekday + ' ' + date
         }))
         : null
-    }
+    },
 
-    // groupedEvents () {
-    //   const res = {}
-    //
-    //   this.eventDates.forEach(date => {
-    //     const tmp = this.sortedEvents.filter(event => {
-    //       return new Intl.DateTimeFormat()
-    //         .format(new Date(event.begDate)) === new Intl.DateTimeFormat().format(new Date(date))
-    //     })
-    //     res[date] = tmp
-    //   })
-    //   return res
-    // }
+    groupedEvents () {
+      const res = {}
+
+      this.eventDates.forEach(date => {
+        const tmp = this.sortedEvents.filter(event => {
+          return new Intl.DateTimeFormat()
+            .format(new Date(event.begDate)) === new Intl.DateTimeFormat().format(new Date(date))
+        })
+        res[date] = tmp
+      })
+      return res
+    }
   },
 
   watch: {
@@ -107,25 +108,26 @@ export default {
     async getEventsList () {
       this.events = await eventAPI.getEventsList()
 
-      const today = new Intl.DateTimeFormat().format(new Date())
-      this.events.forEach(event => {
-        const date = new Intl.DateTimeFormat('en-US')
-          .format(new Date(event.begDate))
-        const weekday = new Intl.DateTimeFormat('en-US', { weekday: 'long' })
-          .format(new Date(event.begDate))
-          .toUpperCase()
-        if (today === new Intl.DateTimeFormat().format(new Date(event.begDate))) {
-          event.date = 'TODAY ' + date
-          event.dateColor = '#3B82F6'
-        } else {
-          event.date = weekday + ' ' + date
-          event.dateColor = null
-        }
-      })
+      // const today = new Intl.DateTimeFormat().format(new Date())
+      // this.events.forEach(event => {
+      //   const date = new Intl.DateTimeFormat('en-US')
+      //     .format(new Date(event.begDate))
+      //   const weekday = new Intl.DateTimeFormat('en-US', { weekday: 'long' })
+      //     .format(new Date(event.begDate))
+      //     .toUpperCase()
+      //   if (today === date) {
+      //     event.date = 'TODAY ' + date
+      //     event.dateColor = '#3B82F6'
+      //   } else {
+      //     event.date = weekday + ' ' + date
+      //     event.dateColor = null
+      //   }
+      // })
     },
 
     async getEventDescription (id) {
-      this.eventInfo = (await eventAPI.getEventDescription(id)).pop()
+      const response = await eventAPI.getEventDescription(id)
+      return response.pop()
     }
   },
 

@@ -88,7 +88,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 .toolbar {
   display: flex;
 }
@@ -124,5 +124,20 @@ export default {
   overflow-y: scroll;
   max-height: 657px;
   box-shadow: 0px 2px 12px rgba(37, 51, 66, 0.15);
+
+  &::-webkit-scrollbar {
+  width: 5px;
+  background-color: #ffffff;
+}
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    background-color: #8E9FAD;
+  }
+
+  &::-webkit-scrollbar-track {
+    border-radius: 5px;
+    background-color: #ffffff;
+  }
 }
 </style>

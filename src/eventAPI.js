@@ -23,7 +23,9 @@ export async function getEventDescription (id) {
       })
     ])
     const categories = await CATEGORIES
-    return joinEventsWithCategories(events.data, categories)
+    const joinedEvent = joinEventsWithCategories(events.data, categories)
+    joinEventsWithIntlDateColor(await joinedEvent)
+    return joinedEvent
   } catch (e) {
     console.log(e)
   }
@@ -39,7 +41,9 @@ export async function getEventsList () {
       axios.get('/events')
     ])
     const categories = await CATEGORIES
-    return joinEventsWithCategories(events.data, categories)
+    const joinedEvents = joinEventsWithCategories(events.data, categories)
+    joinEventsWithIntlDateColor(await joinedEvents)
+    return joinedEvents
   } catch (e) {
     console.log(e)
   }
@@ -90,6 +94,24 @@ async function joinEventsWithCategories (events, categories) {
     return {
       ...data,
       category: map[eventTypeId]
+    }
+  })
+}
+
+function joinEventsWithIntlDateColor (events) {
+  const today = new Intl.DateTimeFormat().format(new Date())
+  return events.map(event => {
+    const date = new Intl.DateTimeFormat('en-US')
+      .format(new Date(event.begDate))
+    const weekday = new Intl.DateTimeFormat('en-US', { weekday: 'long' })
+      .format(new Date(event.begDate))
+      .toUpperCase()
+    if (today === date) {
+      event.date = 'TODAY ' + date
+      event.dateColor = '#3B82F6'
+    } else {
+      event.date = weekday + ' ' + date
+      event.dateColor = null
     }
   })
 }
