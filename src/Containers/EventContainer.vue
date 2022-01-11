@@ -41,39 +41,31 @@ export default {
         predicates.push((x) => new Date(x.begDate) <= till && new Date(x.endDate) >= from)
       }
 
-      return predicates.length
+      const filteredEvents = predicates.length
         ? this.events.filter((x) =>
           predicates.every((predicate) => predicate(x))
         )
         : this.events
-    },
 
-    sortedEvents () {
-      const sortArr = this.filteredEvents
-      sortArr.sort(this.sortByField('begDate'))
-      return sortArr.reverse()
+      filteredEvents.sort(this.sortByField('begDate'))
+      return filteredEvents.reverse()
     },
 
     eventDates () {
-      return this.sortedEvents.length
-        ? new Set(this.sortedEvents.map(event => {
-          const date = new Intl.DateTimeFormat('en-US')
-            .format(new Date(event.begDate))
-          const weekday = new Intl.DateTimeFormat('en-US', { weekday: 'long' })
-            .format(new Date(event.begDate))
-            .toUpperCase()
-          return weekday + ' ' + date
+      return this.filteredEvents.length
+        ? new Set(this.filteredEvents.map(event => {
+          return event.date
         }))
         : null
     },
 
     groupedEvents () {
+      if (!this.eventDates) return null
       const res = {}
 
       this.eventDates.forEach(date => {
-        const tmp = this.sortedEvents.filter(event => {
-          return new Intl.DateTimeFormat()
-            .format(new Date(event.begDate)) === new Intl.DateTimeFormat().format(new Date(date))
+        const tmp = this.filteredEvents.filter(event => {
+          return event.date === date
         })
         res[date] = tmp
       })
@@ -107,22 +99,6 @@ export default {
 
     async getEventsList () {
       this.events = await eventAPI.getEventsList()
-
-      // const today = new Intl.DateTimeFormat().format(new Date())
-      // this.events.forEach(event => {
-      //   const date = new Intl.DateTimeFormat('en-US')
-      //     .format(new Date(event.begDate))
-      //   const weekday = new Intl.DateTimeFormat('en-US', { weekday: 'long' })
-      //     .format(new Date(event.begDate))
-      //     .toUpperCase()
-      //   if (today === date) {
-      //     event.date = 'TODAY ' + date
-      //     event.dateColor = '#3B82F6'
-      //   } else {
-      //     event.date = weekday + ' ' + date
-      //     event.dateColor = null
-      //   }
-      // })
     },
 
     async getEventDescription (id) {
@@ -133,7 +109,8 @@ export default {
 
   render () {
     return this.$scopedSlots.default({
-      events: this.sortedEvents
+      events: this.filteredEvents,
+      groupedEvents: this.groupedEvents
     })
   }
 }

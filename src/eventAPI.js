@@ -8,6 +8,8 @@ export const PARTICIPANTS = Promise.resolve(axios.get('/employees')).then(respon
   return response.data
 })
 
+const DATE_COLOR = '#3B82F6'
+
 /**
  * Get event by ID
  * @param id
@@ -98,6 +100,11 @@ async function joinEventsWithCategories (events, categories) {
   })
 }
 
+/**
+ * Returns event object with joined long intl weekday and intl full year
+ * @param events
+ * @returns {*}
+ */
 function joinEventsWithIntlDateColor (events) {
   const today = new Intl.DateTimeFormat().format(new Date())
   return events.map(event => {
@@ -108,7 +115,7 @@ function joinEventsWithIntlDateColor (events) {
       .toUpperCase()
     if (today === date) {
       event.date = 'TODAY ' + date
-      event.dateColor = '#3B82F6'
+      event.dateColor = DATE_COLOR
     } else {
       event.date = weekday + ' ' + date
       event.dateColor = null
