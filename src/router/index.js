@@ -1,13 +1,15 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import EventDescription from '../components/eventDescription/EventDescription.vue'
+// import EventDescription from '../components/eventDescription/EventDescription.vue'
+import EventDescriptionContainer from '../Containers/EventDescriptionContainer'
+
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/:id',
-    name: 'EventDescription',
-    component: EventDescription,
+    name: 'EventDescriptionContainer',
+    component: EventDescriptionContainer,
     props: true
   }
 ]

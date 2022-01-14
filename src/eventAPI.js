@@ -1,14 +1,14 @@
 import axios from './axios'
 
-export const CATEGORIES = Promise.resolve(axios.get('/event-categories')).then(response => {
-  return response.data
+export const cCategories = Promise.resolve(axios.get('/event-categories')).then(response => {
+  return response.data.reduce((map, category) => {
+    return Object.assign(map, {
+      [category.id]: category
+    })
+  }, {})
 })
 
-export const PARTICIPANTS = Promise.resolve(axios.get('/employees')).then(response => {
-  return response.data
-})
-
-const DATE_COLOR = '#3B82F6'
+export const participants = axios.get('/employees')
 
 /**
  * Get event by ID
@@ -16,21 +16,9 @@ const DATE_COLOR = '#3B82F6'
  * @returns {Promise<*|*[]>}
  */
 export async function getEventDescription (id) {
-  try {
-    const [events] = await Promise.all([
-      axios.get('/events', {
-        params: {
-          id
-        }
-      })
-    ])
-    const categories = await CATEGORIES
-    const joinedEvent = joinEventsWithCategories(events.data, categories)
-    joinEventsWithIntlDateColor(await joinedEvent)
-    return joinedEvent
-  } catch (e) {
-    console.log(e)
-  }
+  const events = await axios.get('/events/' + id)
+  const categories = await cCategories
+  return mapToEvent(events.data, categories)
 }
 
 /**
@@ -38,17 +26,9 @@ export async function getEventDescription (id) {
  * @returns {Promise<*>}
  */
 export async function getEventsList () {
-  try {
-    const [events] = await Promise.all([
-      axios.get('/events')
-    ])
-    const categories = await CATEGORIES
-    const joinedEvents = joinEventsWithCategories(events.data, categories)
-    joinEventsWithIntlDateColor(await joinedEvents)
-    return joinedEvents
-  } catch (e) {
-    console.log(e)
-  }
+  const events = await axios.get('/events')
+  const categories = await cCategories
+  return joinEventsWithCategories(events.data, categories)
 }
 
 /**
@@ -57,11 +37,9 @@ export async function getEventsList () {
  * @returns {Promise<void>}
  */
 export async function saveEvent (obj) {
-  const [response, categories] = await Promise.all([axios.post('/events', {
+  await axios.post('/events', {
     ...obj
-  }),
-  axios.get('/event-categories')])
-  return joinEventsWithCategories([response.data], categories.data)
+  })
 }
 
 /**
@@ -70,55 +48,56 @@ export async function saveEvent (obj) {
  * @returns {Promise<void>}
  */
 export async function removeEvent (eventId) {
-  try {
-    await axios.delete(`/events/${eventId}`)
-    return eventId
-  } catch (e) {
-    console.log('Ошибка удаления, элемент не найден:\n', e)
-  }
+  await axios.delete(`/events/${eventId}`)
 }
 
 /**
  * Returns merged data of event list with event category
  * @returns {Promise<*>}
  */
-async function joinEventsWithCategories (events, categories) {
-  const map = categories.reduce((map, category) => {
-    return Object.assign(map, {
-      [category.id]: category
-    })
-  }, {})
-  return events.map(evt => {
-    const {
-      eventTypeId,
-      ...data
-    } = evt
-    return {
-      ...data,
-      category: map[eventTypeId]
-    }
-  })
+function joinEventsWithCategories (events, categories) {
+  return events.map(evt => mapToEvent(evt, categories))
 }
 
-/**
- * Returns event object with joined long intl weekday and intl full year
- * @param events
- * @returns {*}
- */
-function joinEventsWithIntlDateColor (events) {
-  const today = new Intl.DateTimeFormat().format(new Date())
-  return events.map(event => {
-    const date = new Intl.DateTimeFormat('en-US')
-      .format(new Date(event.begDate))
-    const weekday = new Intl.DateTimeFormat('en-US', { weekday: 'long' })
-      .format(new Date(event.begDate))
-      .toUpperCase()
-    if (today === date) {
-      event.date = 'TODAY ' + date
-      event.dateColor = DATE_COLOR
-    } else {
-      event.date = weekday + ' ' + date
-      event.dateColor = null
-    }
-  })
+function mapToEvent (definition, categories) {
+  const {
+    eventTypeId,
+    begDate,
+    endDate,
+    ...data
+  } = definition
+
+  const from = new Date(begDate)
+  const till = new Date(endDate)
+  return {
+    ...data,
+    from,
+    till,
+    date: new Date(from.getTime()).setHours(0, 0, 0, 0),
+    category: categories[eventTypeId]
+  }
 }
+
+// /**
+//  * Returns event object with joined long intl weekday and intl full year
+//  * @param events
+//  * @returns {*}
+//  */
+// function joinEventsWithIntlDateColor (events) {
+//   const today = new Intl.DateTimeFormat().format(new Date())
+//   console.log(events)
+//   return events.map(event => {
+//     const intlDate = new Intl.DateTimeFormat(US_LOCALES)
+//       .format(new Date(event.begDate))
+//     const weekday = new Intl.DateTimeFormat(US_LOCALES, { weekday: LONG_WEEKDAY })
+//       .format(new Date(event.begDate))
+//       .toUpperCase()
+//     if (today === intlDate) {
+//       event.date = 'TODAY ' + intlDate
+//       event.dateColor = DATE_COLOR
+//     } else {
+//       event.date = weekday + ' ' + intlDate
+//       event.dateColor = null
+//     }
+//   })
+// }

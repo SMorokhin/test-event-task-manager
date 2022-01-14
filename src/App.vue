@@ -3,35 +3,32 @@
     <v-main
     >
       <event-container :params="params">
-        <template v-slot:default="{ events }">
+        <template v-slot:default="{ groupedEvents }">
           <v-container>
             <div class="flex-row mb-15">
               <div class="header-name">Events</div>
               <div class="toolbar">
-              <div>
-                <search v-model="params.search"/>
-              </div>
-              <div>
-                <date-picker v-model="params.dates"/>
-              </div>
-              <v-btn color="warning" text class="ml-2" @click="reset">
-                Reset
-              </v-btn>
-              <div class="btn">
-                <create-modal/>
-              </div>
+                <div>
+                  <search v-model="params.search"/>
+                </div>
+                <div>
+                  <date-picker v-model="params.dates"/>
+                </div>
+                <v-btn color="warning" text class="ml-2" @click="reset">
+                  Reset
+                </v-btn>
+                <div class="btn">
+                  <create-modal/>
+                </div>
               </div>
             </div>
             <div class="d-flex flex-row justify-lg-space-between">
               <div class="flex-column listItem">
-                <event-list-item
-                  @isActive="onIsActive"
-                  v-for="(event, index) in events"
-                  :index="index"
-                  :key="event.id"
-                  :value="event"
-                  :active="event.id === active"
-                />
+                  <event-list-group
+                    v-for="group in groupedEvents"
+                    :key="group.date"
+                    :group="group"
+                  />
               </div>
               <router-view/>
             </div>
@@ -47,7 +44,7 @@ import DatePicker from './components/UI/datePicker/DatePicker.vue'
 import Search from './components/UI/search/Search.vue'
 import CreateModal from './components/UI/CreateModal/CreateModal'
 import EventContainer from './Containers/EventContainer'
-import EventListItem from './components/eventListItem/EventListItem'
+import EventListGroup from './components/eventList/eventListGroup/EventListGroup'
 
 const DEFAULT_REQUEST_ARGS = {
   dates: null,
@@ -62,23 +59,18 @@ export default {
     Search,
     CreateModal,
     EventContainer,
-    EventListItem
+    EventListGroup
   },
 
   data () {
     return {
       params: {
         ...DEFAULT_REQUEST_ARGS
-      },
-      active: null
+      }
     }
   },
 
   methods: {
-    onIsActive (value) {
-      this.active = value
-    },
-
     reset () {
       this.params = {
         ...DEFAULT_REQUEST_ARGS
@@ -126,9 +118,9 @@ export default {
   box-shadow: 0px 2px 12px rgba(37, 51, 66, 0.15);
 
   &::-webkit-scrollbar {
-  width: 5px;
-  background-color: #ffffff;
-}
+    width: 5px;
+    background-color: #ffffff;
+  }
 
   &::-webkit-scrollbar-thumb {
     border-radius: 5px;

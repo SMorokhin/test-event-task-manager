@@ -59,7 +59,7 @@
                 <v-select
                   solo
                   v-model="selectedEventCategory"
-                  :items="eventCategory.map(e => e.name)"
+                  :items="itemCategoriesSelect"
                 ></v-select>
               </div>
               <div class="flex-column">
@@ -69,10 +69,9 @@
                   solo
                   chips
                   multiple
-                  attach
                   deletable-chips
                   v-model="selectedParticipant"
-                  :items="participants.map(e => e.fls)"
+                  :items="itemParticipantsSelect"
                 ></v-select>
               </div>
             </div>
@@ -114,11 +113,12 @@ import * as eventAPI from '../../../eventAPI'
 export default {
   name: 'CreateModal',
 
-  components: {},
-
   async created () {
-    this.eventCategory = await eventAPI.CATEGORIES
-    this.participants = await eventAPI.PARTICIPANTS
+    this.eventCategories = Object.values(await eventAPI.cCategories)
+    eventAPI.participants
+      .then(response => {
+        this.participants = response.data
+      })
     this.loaded = true
   },
 
@@ -132,12 +132,13 @@ export default {
       selectedParticipant: [],
       selectedEventCategory: '',
       dateTime: null,
+      eventCategories: [],
+      participants: [],
+
       textFieldProps: {
         prependInnerIcon: 'mdi-calendar',
         solo: true
-      },
-      eventCategory: [],
-      participants: []
+      }
     }
   },
 
@@ -155,17 +156,16 @@ export default {
 
     async save () {
       this.loaded = false
-      const response = await eventAPI.saveEvent({
+      await eventAPI.saveEvent({
         name: this.title,
         description: this.description,
         begDate: this.dateTime,
         endDate: this.dateTime,
         participant: this.participantsList,
-        eventTypeId: this.getEventTypeId,
+        eventTypeId: this.selectedEventCategory,
         repeat: this.repeat
       })
       this.clearFields()
-      console.log(response)
       await this.refresh()
       this.loaded = true
       this.dialog = false
@@ -173,30 +173,35 @@ export default {
   },
 
   computed: {
+    itemCategoriesSelect () {
+      return this.eventCategories.map(el => {
+        return {
+          text: el.name,
+          value: el.id
+        }
+      })
+    },
+
+    itemParticipantsSelect () {
+      return this.participants.map(el => {
+        return {
+          text: el.fls,
+          value: el.id
+        }
+      })
+    },
+
     /**
      * Returns string of participants which was selected by one line, devided by ','
+     * Нет необходимости, теперь передаются id участников, в данном ВС пропала необходимость
+     * но необходимо переделать логику и структуру файла db.json в json-server
+     * По хорошему. рпосто отсылаю id, а что поместить оп данному id выбирается на бэке
      * @returns {*}
      */
     participantsList () {
       const len = this.selectedParticipant.length - 1
       return this.selectedParticipant.reduce((acc, el, idx) =>
         idx === len ? acc + el : acc + el + ', ', '')
-    },
-
-    /**
-     * Returns event's ID by event name
-     * @returns {null|*}
-     */
-    getEventTypeId () {
-      if (this.selectedEventCategory) {
-        const result = this.eventCategory.find(el => {
-          return el.name === this.selectedEventCategory
-            ? el.id
-            : null
-        })
-        return result.id
-      }
-      return null
     },
 
     /**

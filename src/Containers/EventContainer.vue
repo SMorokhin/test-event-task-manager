@@ -13,7 +13,9 @@ export default {
     return {
       refresh: this.getEventsList,
       remove: this.removeEvent,
-      getEventDescription: this.getEventDescription
+      getEventDescription (id) {
+        return eventAPI.getEventDescription(id)
+      }
     }
   },
 
@@ -38,7 +40,7 @@ export default {
 
       if (this.params.dates) {
         const { from, till } = this.params.dates
-        predicates.push((x) => new Date(x.begDate) <= till && new Date(x.endDate) >= from)
+        predicates.push((x) => x.from >= from && x.till <= till)
       }
 
       const filteredEvents = predicates.length
@@ -47,29 +49,20 @@ export default {
         )
         : this.events
 
-      filteredEvents.sort(this.sortByField('begDate'))
-      return filteredEvents.reverse()
-    },
-
-    eventDates () {
-      return this.filteredEvents.length
-        ? new Set(this.filteredEvents.map(event => {
-          return event.date
-        }))
-        : null
+      filteredEvents.sort((a, b) => (a.date > b.date) ? 1 : -1)
+      return filteredEvents
     },
 
     groupedEvents () {
-      if (!this.eventDates) return null
-      const res = {}
-
-      this.eventDates.forEach(date => {
-        const tmp = this.filteredEvents.filter(event => {
-          return event.date === date
+      return this.filteredEvents.reduce((groups, event) => {
+        const group = groups[event.date] || (groups[event.date] = {
+          date: event.date,
+          events: []
         })
-        res[date] = tmp
-      })
-      return res
+
+        group.events.push(event)
+        return groups
+      }, {})
     }
   },
 
@@ -84,32 +77,18 @@ export default {
   },
 
   methods: {
-    reset () {
-    },
-
-    sortByField (field) {
-      return (a, b) => a[field] > b[field] ? 1 : -1
-    },
-
     async removeEvent (eventInfoId) {
-      const removedId = await eventAPI.removeEvent(eventInfoId)
-      await this.getEventDescription(removedId)
+      await eventAPI.removeEvent(eventInfoId)
       await this.getEventsList()
     },
 
     async getEventsList () {
       this.events = await eventAPI.getEventsList()
-    },
-
-    async getEventDescription (id) {
-      const response = await eventAPI.getEventDescription(id)
-      return response.pop()
     }
   },
 
   render () {
     return this.$scopedSlots.default({
-      events: this.filteredEvents,
       groupedEvents: this.groupedEvents
     })
   }
