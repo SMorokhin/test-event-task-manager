@@ -12,8 +12,12 @@
 
 <script>
 import EventListItem from '../eventListItem/EventListItem'
+import * as timeFormat from '../../../js/timeFormat'
 
-const MILLISECONDS_DAY = 86400000
+const SECOND = 1000
+const MINUTE = SECOND * 60
+const HOUR = MINUTE * 60
+const DAY = HOUR * 24
 
 export default {
   name: 'EventListGroup',
@@ -41,14 +45,10 @@ export default {
     },
 
     formatDateWeekday () {
-      const tomorrow = this.today + MILLISECONDS_DAY
-      const yesterday = this.today - MILLISECONDS_DAY
+      const tomorrow = this.today + DAY
+      const yesterday = this.today - DAY
 
-      const weekday = new Intl.DateTimeFormat('en-US', { weekday: 'long' })
-        .format(this.group.date)
-        .toUpperCase()
-      const day = Intl.DateTimeFormat('en-US')
-        .format(this.group.date)
+      const [weekday, day] = timeFormat.getWeekdayDate(this.group.date)
 
       switch (this.group.date) {
         case yesterday:

@@ -30,12 +30,8 @@ export default {
       const predicates = []
 
       if (this.params.search) {
-        predicates.push((x) => x.name
-          .toLowerCase()
-          .trim()
-          .includes(this.params.search
-            .toLowerCase()
-            .trim()))
+        const search = new RegExp(this.params.search, 'i')
+        predicates.push((x) => search.test(x.name))
       }
 
       if (this.params.dates) {
@@ -49,7 +45,7 @@ export default {
         )
         : this.events
 
-      filteredEvents.sort((a, b) => (a.date > b.date) ? 1 : -1)
+      filteredEvents.sort((a, b) => a.date - b.date)
       return filteredEvents
     },
 

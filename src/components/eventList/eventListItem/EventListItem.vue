@@ -2,7 +2,7 @@
   <router-link
     class="router-link"
     :to="{
-          name: 'EventDescriptionContainer',
+          name: 'events.event',
           params: { id: event.id },
         }">
     <div class="item"
@@ -15,6 +15,8 @@
 </template>
 
 <script>
+import * as timeFormat from '../../../js/timeFormat'
+
 export default {
   name: 'EventListItem',
 
@@ -31,13 +33,7 @@ export default {
     },
 
     timeLine () {
-      return this.event.from.getHours() +
-        ':' +
-        (this.event.from.getMinutes() < 10 ? '0' : '') + this.event.from.getMinutes() +
-        ' - ' +
-        this.event.till.getHours() +
-        ':' +
-        (this.event.till.getMinutes() < 10 ? '0' : '') + this.event.till.getMinutes()
+      return timeFormat.timeLine(this.event.from, this.event.till)
     }
   }
 }

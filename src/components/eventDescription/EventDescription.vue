@@ -22,6 +22,7 @@
         <v-col cols="auto">
           <vertical-burger-menu
             @removeEvent="remove(id)"
+            @updateEvent="update"
             :list-items="listItemsProps">
           </vertical-burger-menu>
         </v-col>
@@ -43,6 +44,7 @@
     <div v-else>
       Event by searched ID is not found.
     </div>
+   <router-view/>
   </div>
 </template>
 <script src="./eventdescription.js"></script>

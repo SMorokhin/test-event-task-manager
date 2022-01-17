@@ -1,6 +1,6 @@
 import axios from './axios'
 
-export const cCategories = Promise.resolve(axios.get('/event-categories')).then(response => {
+export const categories = Promise.resolve(axios.get('/event-categories')).then(response => {
   return response.data.reduce((map, category) => {
     return Object.assign(map, {
       [category.id]: category
@@ -16,9 +16,8 @@ export const participants = axios.get('/employees')
  * @returns {Promise<*|*[]>}
  */
 export async function getEventDescription (id) {
-  const events = await axios.get('/events/' + id)
-  const categories = await cCategories
-  return mapToEvent(events.data, categories)
+  const events = await axios.get(`/events/${id}`)
+  return mapToEvent(events.data, await categories)
 }
 
 /**
@@ -27,8 +26,7 @@ export async function getEventDescription (id) {
  */
 export async function getEventsList () {
   const events = await axios.get('/events')
-  const categories = await cCategories
-  return joinEventsWithCategories(events.data, categories)
+  return joinEventsWithCategories(events.data, await categories)
 }
 
 /**
@@ -37,9 +35,11 @@ export async function getEventsList () {
  * @returns {Promise<void>}
  */
 export async function saveEvent (obj) {
-  await axios.post('/events', {
-    ...obj
-  })
+  await axios.post('/events', obj)
+}
+
+export async function updateEvent (id, obj) {
+  await axios.patch(`/events/${id}`, obj)
 }
 
 /**
@@ -77,27 +77,3 @@ function mapToEvent (definition, categories) {
     category: categories[eventTypeId]
   }
 }
-
-// /**
-//  * Returns event object with joined long intl weekday and intl full year
-//  * @param events
-//  * @returns {*}
-//  */
-// function joinEventsWithIntlDateColor (events) {
-//   const today = new Intl.DateTimeFormat().format(new Date())
-//   console.log(events)
-//   return events.map(event => {
-//     const intlDate = new Intl.DateTimeFormat(US_LOCALES)
-//       .format(new Date(event.begDate))
-//     const weekday = new Intl.DateTimeFormat(US_LOCALES, { weekday: LONG_WEEKDAY })
-//       .format(new Date(event.begDate))
-//       .toUpperCase()
-//     if (today === intlDate) {
-//       event.date = 'TODAY ' + intlDate
-//       event.dateColor = DATE_COLOR
-//     } else {
-//       event.date = weekday + ' ' + intlDate
-//       event.dateColor = null
-//     }
-//   })
-// }

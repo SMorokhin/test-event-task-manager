@@ -9,12 +9,17 @@ export default {
       listItemsProps: [{
         name: 'Удалить',
         method: 'removeEvent'
+      },
+      {
+        name: 'Редактировать',
+        method: 'updateEvent'
       }]
     }
   },
 
   inject: [
-    'remove'
+    'remove',
+    'update'
   ],
 
   props: {
