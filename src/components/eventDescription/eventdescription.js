@@ -7,11 +7,11 @@ export default {
   data () {
     return {
       listItemsProps: [{
-        name: 'Удалить',
+        name: 'Remove',
         method: 'removeEvent'
       },
       {
-        name: 'Редактировать',
+        name: 'Update',
         method: 'updateEvent'
       }]
     }
@@ -28,6 +28,10 @@ export default {
     },
     eventInfo: {
       type: Object,
+      required: true
+    },
+    participantsList: {
+      type: String,
       required: true
     },
     formatWeekdayDate: {

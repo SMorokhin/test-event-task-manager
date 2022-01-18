@@ -28,8 +28,8 @@
         </v-col>
       </v-row>
       <v-row class="participant-container">
-        <v-col v-if="eventInfo.participant">
-          {{ eventInfo.participant }}
+        <v-col v-if="participantsList.length">
+          {{ participantsList }}
         </v-col>
         <v-col v-else>
           No participants for this event

@@ -5,7 +5,7 @@
     persistent
     max-width="700px"
   >
-    <v-card :disabled="!loaded">
+    <v-card>
       <v-card-title>
         <slot name="dialogTitle"/>
       </v-card-title>
@@ -54,7 +54,7 @@
               solo
               v-model="input.selectedEventCategory"
               @input="$emit('input', input)"
-              :items="itemCategoriesSelect"
+              :items="eventCategories"
             ></v-select>
           </div>
           <div class="flex-column">
@@ -67,7 +67,7 @@
               deletable-chips
               v-model="input.selectedParticipant"
               @input="$emit('input', input)"
-              :items="itemParticipantsSelect"
+              :items="participants"
             ></v-select>
           </div>
         </div>
@@ -84,15 +84,7 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn
-          color="error"
-          text
-          @click="close"
-        >
-          Close
-        </v-btn>
-        <slot name="controlButtons"
-              :dialog="dialog"/>
+        <slot name="controlButtons"/>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -105,19 +97,29 @@ export default {
   name: 'CustomModal',
 
   async created () {
-    this.eventCategories = Object.values(await eventAPI.categories)
+    eventAPI.categories
+      .then(response => {
+        this.eventCategories = Object.values(response).map(el => {
+          return {
+            text: el.name,
+            value: el.id
+          }
+        })
+      })
     eventAPI.participants
       .then(response => {
-        this.participants = response.data
+        this.participants = response.data.map(el => {
+          return {
+            text: el.fls,
+            value: el.id
+          }
+        })
       })
     this.input = this.initialInput
-    this.loaded = true
   },
 
   data () {
     return {
-      dialog: true,
-      loaded: false,
       input: null,
       eventCategories: [],
       participants: [],
@@ -130,6 +132,10 @@ export default {
   },
 
   props: {
+    dialog: {
+      type: Boolean,
+      required: true
+    },
     initialInput: {
       type: Object,
       default: () => {
@@ -142,33 +148,6 @@ export default {
           repeat: false
         }
       }
-    }
-  },
-
-  computed: {
-    itemCategoriesSelect () {
-      return this.eventCategories.map(el => {
-        return {
-          text: el.name,
-          value: el.id
-        }
-      })
-    },
-
-    itemParticipantsSelect () {
-      return this.participants.map(el => {
-        return {
-          text: el.fls,
-          value: el.id
-        }
-      })
-    }
-  },
-
-  methods: {
-    close () {
-      this.dialog = false
-      this.$router.back()
     }
   }
 }

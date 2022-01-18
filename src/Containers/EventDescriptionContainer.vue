@@ -4,6 +4,7 @@
                      :event-info="eventInfo"
                      :format-weekday-date="formatWeekdayDate"
                      :get-time-line="getTimeLine"
+                     :participants-list="participantsList"
                      :id="id"/>
   <Error v-else
          :message-text="errorMessage"
@@ -31,8 +32,21 @@ export default {
       loading: null,
       eventInfo: null,
       errorMessage: 'Event by searched ID is not found.',
-      errorDescription: null
+      errorDescription: null,
+      participants: null
     }
+  },
+
+  created () {
+    eventAPI.participants
+      .then(response => {
+        this.participants = response.data.map(el => {
+          return {
+            text: el.fls,
+            value: el.id
+          }
+        })
+      })
   },
 
   inject: ['refresh'],
@@ -63,6 +77,7 @@ export default {
         this.eventInfo = null
         await this.refresh()
       } catch (e) {
+        // this.error = e
         console.log(e)
       } finally {
         this.loading = false
@@ -101,6 +116,14 @@ export default {
   },
 
   computed: {
+    participantsList () {
+      return this.participants.reduce((participantList, participant) => {
+        if (this.eventInfo.participant.includes(participant.value)) {
+          participantList.push(participant.text)
+        }
+        return participantList
+      }, []).join(', ')
+    },
     /**
      * Get time interval of event activity
      * @returns {string}

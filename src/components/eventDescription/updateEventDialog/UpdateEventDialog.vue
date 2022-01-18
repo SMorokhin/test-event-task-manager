@@ -2,16 +2,24 @@
   <loading-spinner v-if=" loading" class="spin"/>
   <custom-modal v-else
                 v-model="inputData"
-                :initial-input="initialInput">
+                :initial-input="initialInput"
+                :dialog="dialog">
     <template v-slot:dialogTitle>
       <span class="text-h5">Update Event</span>
     </template>
     <template v-slot:controlButtons>
       <v-card-actions>
         <v-btn
+          color="error"
+          text
+          @click="close"
+        >
+          Close
+        </v-btn>
+        <v-btn
           color="blue darken-1"
           text
-          @click="update()"
+          @click="update"
           :disabled="!formValid"
         >
           Update
@@ -43,7 +51,9 @@ export default {
       title: this.event.name,
       description: this.event.description,
       dateTime: this.event.from,
-      selectedParticipant: [],
+      // предполагается, что будет с бэка приходить массив чисел, а не строка, перечисляющая участников, следовательно
+      // такой конструкции не будет.
+      selectedParticipant: this.event.participant,
       selectedEventCategory: this.event.category.id,
       repeat: this.event.repeat
     }
@@ -71,7 +81,7 @@ export default {
           description: this.inputData.description,
           begDate: this.inputData.dateTime,
           endDate: this.inputData.dateTime,
-          participant: this.inputData.selectedParticipant.join(', '),
+          participant: this.inputData.selectedParticipant,
           eventTypeId: this.inputData.selectedEventCategory,
           repeat: this.inputData.repeat
         })
@@ -80,13 +90,13 @@ export default {
       } catch (e) {
         console.log(e)
       } finally {
-        await this.$router.push({
-          name: 'events.event',
-          params: {
-            id: this.event.id
-          }
-        })
+        this.$router.back()
       }
+    },
+
+    close () {
+      this.dialog = false
+      this.$router.back()
     }
   },
 

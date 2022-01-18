@@ -7,7 +7,7 @@
         }">
     <div class="item"
          :class="{ 'active': isActive }"
-         :style="isActive ? { borderRight: `3px solid ${ event.category.color}` } : null">
+         :style="isActive ? { borderRightColor: event.category.color } : null">
       <div class="item__time">{{ timeLine }}</div>
       <div class="item__name">{{ event.name }}</div>
     </div>
@@ -44,6 +44,7 @@ export default {
   background: rgba(59, 130, 246, .1);
   border-radius: 8px 2px 2px 8px;
   color: black;
+  border-right: 3px solid transparent;
 }
 
 .item {
